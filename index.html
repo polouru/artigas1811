@@ -662,13 +662,30 @@
     </div>
 
     <script>
-        // --- SISTEMA DE ACCESIBILIDAD (TEXT-TO-SPEECH) ---
-        function speakText(text) {
+        // --- SISTEMA DE ACCESIBILIDAD (TEXT-TO-SPEECH) CON VOCES ---
+        const voiceProfiles = {
+            "Miliciano (Liberto Oriental)": { pitch: 0.7, rate: 0.9 }, // Voz profunda y firme
+            "Cacique Charrúa": { pitch: 0.4, rate: 0.8 }, // Voz muy grave y pausada
+            "José Gervasio Artigas": { pitch: 0.6, rate: 0.95 }, // Voz grave, de mando
+            "Maestro del Pueblo": { pitch: 1.1, rate: 0.95 }, // Voz clara, un poco más aguda y didáctica
+            "Gaucha Revolucionaria": { pitch: 1.4, rate: 1.0 }, // Voz femenina, aguda y enérgica
+            "Sargento de Milicias": { pitch: 0.8, rate: 1.1 }, // Voz áspera y militarmente rápida
+            "Emisario Español": { pitch: 1.3, rate: 1.05 }, // Voz altiva y ligeramente nasal
+            "Mujer Oriental": { pitch: 1.5, rate: 0.95 }, // Voz femenina, más suave
+            "default": { pitch: 1.0, rate: 0.95 } // Voz estándar del narrador
+        };
+
+        function speakText(text, characterName = "default") {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel(); // Detiene audios previos
                 const utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = 'es-UY'; // Preferencia español uruguayo (si existe, sino usa español gral)
-                utterance.rate = 0.95; // Velocidad ligeramente reducida para mayor claridad
+                
+                // Aplica el perfil de voz según el personaje, o el narrador por defecto
+                const profile = voiceProfiles[characterName] || voiceProfiles["default"];
+                utterance.pitch = profile.pitch;
+                utterance.rate = profile.rate;
+                
                 window.speechSynthesis.speak(utterance);
             } else {
                 alert("Tu navegador no soporta la función de lectura de voz por accesibilidad.");
@@ -693,7 +710,7 @@
                 fullText += `Opción ${index + 1}: ${btn.innerText}. `;
             });
             
-            speakText(fullText);
+            speakText(fullText, scene.character);
         }
 
         function speakFeedback() {
@@ -1259,7 +1276,7 @@
                         <p class="mt-1" id="${greetingId}">Saludos. Selecciona una de las preguntas debajo para conversar conmigo.</p>
                     </div>
                     <div class="flex justify-end gap-2 border-t border-oil-brown/20 pt-2 mt-1">
-                        <button onclick="speakText(document.getElementById('${greetingId}').innerText)" class="text-oil-brown hover:text-yellow-600 text-sm font-bold transition-colors" title="Escuchar saludo">
+                        <button onclick="speakText(document.getElementById('${greetingId}').innerText, '${scene.character}')" class="text-oil-brown hover:text-yellow-600 text-sm font-bold transition-colors" title="Escuchar saludo">
                             <i class="fa-solid fa-ear-listen"></i> Escuchar
                         </button>
                         <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-600 text-sm transition-colors" title="Detener audio">
@@ -1308,6 +1325,8 @@
             chatHistory.scrollTop = chatHistory.scrollHeight;
 
             const msgId = 'chat-ans-' + Date.now();
+            const sceneCharacter = gameData.scenes[currentSceneIndex].character;
+
             setTimeout(() => {
                 chatHistory.innerHTML += `
                     <div class="bg-white/70 p-3 rounded-lg border border-oil-brown/30 shadow-sm self-start max-w-[80%] flex flex-col gap-2 mt-4 slide-up">
@@ -1316,7 +1335,7 @@
                             <p class="mt-1" id="${msgId}">${answer}</p>
                         </div>
                         <div class="flex justify-end gap-2 border-t border-oil-brown/20 pt-2 mt-1">
-                            <button onclick="speakText(document.getElementById('${msgId}').innerText)" class="text-oil-brown hover:text-yellow-600 text-sm font-bold transition-colors" title="Escuchar respuesta">
+                            <button onclick="speakText(document.getElementById('${msgId}').innerText, '${sceneCharacter}')" class="text-oil-brown hover:text-yellow-600 text-sm font-bold transition-colors" title="Escuchar respuesta">
                                 <i class="fa-solid fa-ear-listen"></i> Escuchar
                             </button>
                             <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-600 text-sm transition-colors" title="Detener audio">

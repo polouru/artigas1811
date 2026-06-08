@@ -270,11 +270,11 @@
 
     <!-- Panel Flotante de Control de Audio -->
     <div class="fixed bottom-6 right-6 z-[90] flex items-center bg-oil-brown p-3 rounded-full shadow-2xl border-2 border-oil-gold fade-in">
-        <button onclick="toggleMusic()" class="text-oil-gold hover:text-white transition-colors flex items-center justify-center w-10 h-10">
+        <button onclick="toggleMusic()" class="text-oil-gold hover:text-white transition-colors flex items-center justify-center w-10 h-10" aria-label="Control de música">
             <i id="music-icon" class="fa-solid fa-volume-xmark text-2xl"></i>
         </button>
         <div class="w-24 mx-2">
-            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.2" class="w-full" oninput="changeVolume(this.value)">
+            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.2" class="w-full" oninput="changeVolume(this.value)" aria-label="Volumen de música">
         </div>
     </div>
 
@@ -304,11 +304,21 @@
                     <i class="fa-solid fa-feather-pointed text-4xl text-oil-brown"></i>
                 </div>
                 <h2 class="text-4xl md:text-6xl font-title font-bold text-oil-dark mb-4 border-b-2 border-oil-brown pb-4 block">Grito de Libertad</h2>
-                <p class="text-lg md:text-2xl mb-8 font-serif text-ink leading-relaxed">
+                <p class="text-lg md:text-2xl mb-4 font-serif text-ink leading-relaxed">
                     El lienzo de la historia está en blanco. Te encuentras en 1811, bajo las órdenes de <strong>José Gervasio Artigas</strong>.
                 </p>
+
+                <!-- Botón de Accesibilidad de Lectura para la Intro -->
+                <div class="mb-8">
+                    <button onclick="speakText('Grito de Libertad. El lienzo de la historia está en blanco. Te encuentras en mil ochocientos once, bajo las órdenes de José Gervasio Artigas.')" class="bg-oil-brown hover:bg-yellow-600 hover:text-oil-dark text-parchment-light font-bold py-2 px-6 rounded-full transition-colors inline-flex items-center text-sm shadow border border-oil-gold">
+                        <i class="fa-solid fa-ear-listen mr-2"></i> Escuchar Introducción
+                    </button>
+                    <button onclick="stopSpeaking()" class="ml-2 text-oil-red hover:text-red-600 text-xl transition-colors align-middle" title="Detener audio">
+                        <i class="fa-solid fa-circle-stop"></i>
+                    </button>
+                </div>
                 
-                <div class="flex flex-col md:flex-row justify-center items-center gap-4 mt-6">
+                <div class="flex flex-col md:flex-row flex-wrap justify-center items-center gap-4 mt-2">
                     <button onclick="initGame()" class="bg-oil-dark hover:bg-yellow-600 hover:text-oil-dark text-oil-gold font-title font-bold py-4 px-8 rounded text-lg shadow-2xl transition-all transform hover:scale-105 border-2 border-oil-gold w-full md:w-auto flex justify-center items-center">
                         <i class="fa-solid fa-play mr-3"></i> Comenzar la Campaña
                     </button>
@@ -318,6 +328,10 @@
                     <button onclick="showLyrics()" class="bg-oil-brown hover:bg-yellow-600 hover:text-oil-dark text-parchment-light font-title font-bold py-4 px-8 rounded text-lg shadow border-2 border-parchment-dark transition-all transform hover:scale-105 w-full md:w-auto flex justify-center items-center">
                         <i class="fa-solid fa-music mr-3"></i> Canto de la Patria
                     </button>
+                    <!-- NUEVO BOTÓN CRÉDITOS -->
+                    <button onclick="showCredits()" class="bg-[#eaddcf] hover:bg-yellow-600 hover:text-oil-dark text-oil-dark font-title font-bold py-4 px-8 rounded text-lg shadow border-2 border-oil-brown transition-all transform hover:scale-105 w-full md:w-auto flex justify-center items-center">
+                        <i class="fa-solid fa-award mr-3"></i> Créditos
+                    </button>
                 </div>
             </div>
         </div>
@@ -325,7 +339,7 @@
         <!-- Pantalla de Juego -->
         <div id="screen-game" class="hidden w-full max-w-6xl flex flex-col md:flex-row gap-8 mt-6">
             <div class="w-full md:w-1/3 flex flex-col items-center gap-6">
-                <div class="parchment-panel p-6 w-full text-center flex flex-col items-center">
+                <div class="parchment-panel p-6 w-full text-center flex flex-col items-center relative">
                     <h2 id="scene-location" class="text-2xl font-title font-bold text-oil-red mb-2 uppercase tracking-wider border-b border-oil-brown pb-2 w-full">Cargando...</h2>
                     <h3 id="scene-character" class="text-lg font-serif font-bold text-oil-dark mb-4">Cargando...</h3>
                     
@@ -345,13 +359,34 @@
                     <div id="feedback-overlay" class="hidden absolute inset-0 z-20 flex flex-col justify-center items-center p-8 text-center fade-in text-parchment-light rounded">
                         <i id="feedback-icon" class="text-5xl mb-4"></i>
                         <h3 id="feedback-title" class="text-3xl font-title font-bold mb-4">Título del Feedback</h3>
-                        <p id="feedback-explanation" class="text-xl mb-8 leading-relaxed">Explicación aquí.</p>
+                        <p id="feedback-explanation" class="text-xl mb-6 leading-relaxed">Explicación aquí.</p>
+                        
+                        <!-- Botón de Accesibilidad en Retroalimentación -->
+                        <div class="mb-6 flex gap-2 justify-center items-center">
+                            <button onclick="speakFeedback()" class="bg-black/40 hover:bg-yellow-600 hover:text-oil-dark text-white font-bold py-2 px-5 rounded-full transition-colors inline-flex items-center text-sm shadow border border-white/20">
+                                <i class="fa-solid fa-ear-listen mr-2"></i> Escuchar Explicación
+                            </button>
+                            <button onclick="stopSpeaking()" class="text-white hover:text-red-400 text-xl transition-colors" title="Detener audio">
+                                <i class="fa-solid fa-circle-stop"></i>
+                            </button>
+                        </div>
+
                         <button id="feedback-continue-btn" onclick="continueAfterFeedback()" class="font-bold py-3 px-8 rounded shadow-lg transition-transform transform hover:scale-105">
                             Continuar la Marcha <i class="fa-solid fa-arrow-right ml-2"></i>
                         </button>
                     </div>
 
                     <div id="narrative-content">
+                        <!-- Barra de Accesibilidad para Escena y Opciones -->
+                        <div class="flex justify-between items-center mb-6 border-b border-oil-brown/20 pb-3">
+                            <button onclick="speakCurrentScene()" class="bg-oil-brown hover:bg-yellow-600 hover:text-oil-dark text-parchment-light font-bold py-1.5 px-4 rounded-full transition-colors inline-flex items-center text-sm shadow">
+                                <i class="fa-solid fa-ear-listen mr-2"></i> Narrar Escena y Opciones
+                            </button>
+                            <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-600 text-2xl transition-colors" title="Detener lectura">
+                                <i class="fa-solid fa-circle-stop"></i>
+                            </button>
+                        </div>
+
                         <p id="scene-text" class="mb-8">Texto de la escena...</p>
                         <div id="choices-container" class="space-y-4"></div>
                     </div>
@@ -361,10 +396,8 @@
 
         <!-- Pantalla de Fin de Juego -->
         <div id="screen-ending" class="hidden w-full max-w-3xl text-center fade-in parchment-panel p-10 shadow-2xl relative overflow-hidden">
-            <!-- Sol Giratorio de Fondo -->
             <div id="sunburst-fx" class="hidden absolute inset-0 sunburst pointer-events-none z-0"></div>
             
-            <!-- Bandera de Artigas de Fondo -->
             <div id="victory-bg" class="hidden absolute inset-0 opacity-10 pointer-events-none transition-all duration-1000 z-0">
                 <div class="w-full h-1/3 bg-blue-800"></div>
                 <div class="w-full h-1/3 bg-white relative overflow-hidden">
@@ -373,9 +406,19 @@
                 <div class="w-full h-1/3 bg-blue-800"></div>
             </div>
 
-            <!-- Contenedor Principal Final -->
             <div class="relative z-10 transition-all duration-700" id="ending-content-wrapper">
                 <h2 id="ending-title" class="text-5xl font-title font-bold text-oil-dark mb-6 border-b-2 border-oil-brown pb-4 transition-colors">Resultado</h2>
+                
+                <!-- Botón de Accesibilidad en Resultado -->
+                <div class="mb-6 flex justify-center items-center gap-2">
+                    <button onclick="speakEnding()" class="bg-oil-brown hover:bg-yellow-600 hover:text-oil-dark text-parchment-light font-bold py-1.5 px-5 rounded-full transition-colors inline-flex items-center text-sm shadow">
+                        <i class="fa-solid fa-ear-listen mr-2"></i> Escuchar Boletín Final
+                    </button>
+                    <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-600 text-xl transition-colors" title="Detener audio">
+                        <i class="fa-solid fa-circle-stop"></i>
+                    </button>
+                </div>
+
                 <p id="ending-text" class="text-2xl mb-8 font-serif leading-relaxed text-ink">Texto final...</p>
                 
                 <div id="score-container" class="mb-8 bg-[#eaddcf] p-6 rounded border-2 border-oil-brown transition-all duration-700">
@@ -389,7 +432,6 @@
                     <button onclick="location.reload()" class="bg-oil-dark hover:bg-yellow-600 hover:text-oil-dark text-oil-gold font-title font-bold py-3 px-8 rounded text-xl shadow-lg border-2 border-oil-gold transition-all transform hover:scale-105 w-full md:w-auto">
                         <i class="fa-solid fa-rotate-left mr-2"></i> Jugar de Nuevo
                     </button>
-                    <!-- BOTÓN DEL COFRE MISTERIOSO -->
                     <button id="btn-escape-room" onclick="startEscapeRoom()" class="hidden bg-oil-red hover:bg-red-900 text-parchment-light font-title font-bold py-3 px-8 rounded text-xl shadow-[0_0_15px_rgba(139,0,0,0.8)] border-2 border-oil-gold transition-all transform hover:scale-105 animate-pulse w-full md:w-auto">
                         <i class="fa-solid fa-gem mr-2"></i> El Cofre Misterioso
                     </button>
@@ -405,9 +447,19 @@
 
                 <!-- Fase 1: Preparación -->
                 <div id="escape-prep-phase">
-                    <p class="text-xl mb-6 font-serif leading-relaxed text-parchment-dark">
+                    <p id="escape-prep-text" class="text-xl mb-4 font-serif leading-relaxed text-parchment-dark">
                         Has demostrado ser digno. Ante ti descansa un cofre legendario. Para abrirlo, deberás completar con precisión absoluta los versos que forjaron nuestra identidad. <strong>Un solo error sellará la cerradura para siempre.</strong>
                     </p>
+
+                    <!-- Accesibilidad: Cofre Lectura -->
+                    <div class="mb-6 flex justify-center items-center gap-2">
+                        <button onclick="speakText(document.getElementById('escape-prep-text').innerText)" class="bg-black/50 hover:bg-yellow-600 hover:text-oil-dark text-parchment-light font-bold py-2 px-5 rounded-full transition-colors inline-flex items-center text-sm border border-oil-gold/30">
+                            <i class="fa-solid fa-ear-listen mr-2"></i> Leer Reto
+                        </button>
+                        <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-400 text-xl transition-colors">
+                            <i class="fa-solid fa-circle-stop"></i>
+                        </button>
+                    </div>
 
                     <button onclick="toggleMusic()" class="mb-6 bg-oil-brown hover:bg-yellow-600 hover:text-oil-dark text-oil-gold font-title font-bold py-3 px-8 rounded-full shadow-lg border-2 border-oil-gold transition-all transform hover:scale-105">
                         <i class="fa-solid fa-music mr-2"></i> Reproducir / Pausar Música
@@ -432,8 +484,19 @@
                     <div id="escape-lock-status" class="text-6xl mb-6 text-oil-gold transition-colors duration-300">
                         <i class="fa-solid fa-lock"></i>
                     </div>
-                    <div class="bg-[#eaddcf] text-oil-dark p-8 rounded border-4 border-oil-gold max-w-2xl mx-auto shadow-2xl">
-                        <h3 id="escape-question-title" class="text-2xl font-bold mb-4 uppercase tracking-widest text-oil-red">Mecanismo 1</h3>
+                    <div class="bg-[#eaddcf] text-oil-dark p-8 rounded border-4 border-oil-gold max-w-2xl mx-auto shadow-2xl relative">
+                        
+                        <!-- Accesibilidad: Acertijo -->
+                        <div class="absolute top-4 right-4 flex gap-2">
+                            <button onclick="speakEscapeStep()" class="bg-oil-brown hover:bg-yellow-600 hover:text-oil-dark text-white font-bold py-1 px-3 rounded-full transition-colors inline-flex items-center text-xs shadow">
+                                <i class="fa-solid fa-ear-listen"></i>
+                            </button>
+                            <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-600 text-lg transition-colors">
+                                <i class="fa-solid fa-circle-stop"></i>
+                            </button>
+                        </div>
+
+                        <h3 id="escape-question-title" class="text-2xl font-bold mb-4 uppercase tracking-widest text-oil-red pt-4">Mecanismo 1</h3>
                         <p id="escape-question-text" class="text-2xl font-serif mb-8 italic">«...»</p>
                         
                         <div id="escape-choices" class="flex flex-col gap-4">
@@ -455,7 +518,7 @@
     </main>
     
     <!-- Pie de página con licencia -->
-    <footer class="w-full text-center pb-2 pt-4 z-20 relative mt-auto text-parchment-dark opacity-80" style="font-family: Arial, sans-serif; font-size: 18px;">
+    <footer class="w-full text-center pb-2 pt-4 z-20 relative mt-auto text-parchment-dark opacity-80" style="font-family: Arial, sans-serif; font-size: 10px;">
         Grito de Libertad &copy; 2026 by Pablo Casaretto is licensed under CC BY-NC-SA 4.0
     </footer>
 
@@ -465,6 +528,16 @@
             <i class="fa-solid fa-book-open text-4xl text-oil-red mb-4"></i>
             <h4 id="glossary-title" class="text-2xl font-title font-bold text-oil-dark border-b border-oil-brown pb-2 mb-4 uppercase">Palabra</h4>
             <p id="glossary-meaning" class="text-lg font-body text-ink leading-relaxed italic"></p>
+            
+            <div class="mt-4 flex justify-center gap-2">
+                <button onclick="speakText(document.getElementById('glossary-title').innerText + '. Significa: ' + document.getElementById('glossary-meaning').innerText)" class="bg-oil-brown hover:bg-yellow-600 hover:text-oil-dark text-white font-bold py-1 px-3 rounded-full transition-colors inline-flex items-center text-xs shadow">
+                    <i class="fa-solid fa-ear-listen mr-1"></i> Leer
+                </button>
+                <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-600 text-lg transition-colors">
+                    <i class="fa-solid fa-circle-stop"></i>
+                </button>
+            </div>
+
             <button onclick="closeGlossary(event)" class="mt-6 text-sm font-title font-bold text-oil-brown hover:text-yellow-600 hover:text-oil-dark transition-colors underline">Cerrar</button>
         </div>
     </div>
@@ -473,7 +546,17 @@
     <div id="instructions-modal" class="fixed inset-0 modal-overlay hidden z-[100] flex items-center justify-center p-4" onclick="closeInstructions()">
         <div class="parchment-panel max-w-2xl w-full p-8 relative transform shadow-2xl border-4 border-oil-dark rounded-lg" onclick="event.stopPropagation()">
             <button onclick="closeInstructions()" class="absolute top-4 right-4 text-oil-dark hover:text-oil-red text-2xl transition-colors"><i class="fa-solid fa-xmark"></i></button>
-            <h3 class="text-3xl font-title font-bold text-oil-dark mb-6 border-b-2 border-oil-brown pb-3 text-center"><i class="fa-solid fa-map-location-dot mr-3 text-oil-red"></i> Manual de Campaña</h3>
+            
+            <div class="flex flex-col items-center mb-6 border-b-2 border-oil-brown pb-3">
+                <h3 class="text-3xl font-title font-bold text-oil-dark"><i class="fa-solid fa-map-location-dot mr-3 text-oil-red"></i> Manual de Campaña</h3>
+                <div class="mt-3 flex gap-2">
+                    <button onclick="speakText('Manual de Campaña. Avanza en el mapa leyendo la historia y seleccionando la respuesta correcta. Dialoga usando el botón interrogar. Aprende haciendo clic sobre las palabras subrayadas rojas. El misterio final: Si logras el 12 perfecto, desbloquearás un misterioso cofre.')" class="bg-oil-brown hover:bg-yellow-600 hover:text-oil-dark text-white font-bold py-1 px-4 rounded-full transition-colors inline-flex items-center text-sm shadow">
+                        <i class="fa-solid fa-ear-listen mr-2"></i> Escuchar Manual
+                    </button>
+                    <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-600 text-xl transition-colors"><i class="fa-solid fa-circle-stop"></i></button>
+                </div>
+            </div>
+
             <ul class="space-y-6 font-serif text-lg text-ink">
                 <li class="flex items-start gap-4">
                     <div class="bg-oil-brown text-oil-gold p-3 rounded-full shadow-inner mt-1"><i class="fa-solid fa-route text-xl"></i></div>
@@ -507,6 +590,12 @@
             <div class="text-center mb-6 border-b-2 border-oil-brown pb-4">
                 <i class="fa-solid fa-music text-3xl text-oil-red mb-2"></i>
                 <h3 class="text-3xl font-title font-bold text-oil-dark">La Patria Bajo el Cielo Gris</h3>
+                <div class="mt-3 flex justify-center gap-2">
+                    <button onclick="speakText('La Patria Bajo el Cielo Gris. Verso 1. La tierra tiembla bajo el paso del destino, el humo negro cubre el viejo camino. No es odio, es la sangre de esta tierra viva, que rompe el hierro, que la cadena derriba. Estribillo. ¡Es el grito de libertad! La tempestad se desata en el llano, el pueblo forja su propia mano. Las piedras arden bajo el cielo gris, renace la patria en este matiz.')" class="bg-oil-brown hover:bg-yellow-600 hover:text-oil-dark text-white font-bold py-1 px-4 rounded-full transition-colors inline-flex items-center text-sm shadow">
+                        <i class="fa-solid fa-ear-listen mr-2"></i> Narrar Letra (Fragmento)
+                    </button>
+                    <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-600 text-xl transition-colors"><i class="fa-solid fa-circle-stop"></i></button>
+                </div>
             </div>
             <div class="font-serif text-lg text-ink leading-relaxed space-y-6 px-4 md:px-12 text-center">
                 <div><span class="text-oil-red font-bold text-sm uppercase block mb-1">[Verso 1]</span>La tierra tiembla bajo el paso del destino,<br>el humo negro cubre el viejo camino.<br>No es odio, es la sangre de esta tierra viva,<br>que rompe el hierro, que la cadena derriba.</div>
@@ -518,6 +607,34 @@
             </div>
             <div class="mt-8 text-center pt-6 border-t-2 border-oil-brown/30">
                 <button onclick="closeLyrics()" class="bg-oil-brown hover:bg-yellow-600 hover:text-oil-dark text-parchment-light font-bold py-3 px-10 rounded text-xl shadow border border-oil-dark transition-transform hover:scale-105">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Créditos -->
+    <div id="credits-modal" class="fixed inset-0 modal-overlay hidden z-[100] flex items-center justify-center p-4" onclick="closeCredits()">
+        <div class="parchment-panel max-w-3xl w-full max-h-[90vh] overflow-y-auto p-8 relative transform shadow-2xl border-4 border-oil-dark rounded-lg" onclick="event.stopPropagation()">
+            <button onclick="closeCredits()" class="absolute top-4 right-4 text-oil-dark hover:text-oil-red text-2xl transition-colors"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="flex flex-col items-center mb-6 border-b-2 border-oil-brown pb-3">
+                <h3 class="text-3xl font-title font-bold text-oil-dark"><i class="fa-solid fa-award mr-3 text-oil-red"></i> Créditos – Grito de Libertad</h3>
+                <div class="mt-3 flex gap-2">
+                    <button onclick="speakText('Créditos. El juego Grito de Libertad está publicado bajo licencia Creative Commons. Fue creado a partir de los contenidos de Historia de sexto grado, siguiendo el programa de ANEP. Las imágenes y textos fueron generados con IA bajo la dirección de Pablo Casaretto. Se inspira en el Diseño Universal para el Aprendizaje, garantizando equidad educativa y accesibilidad.')" class="bg-oil-brown hover:bg-yellow-600 hover:text-oil-dark text-white font-bold py-1 px-4 rounded-full transition-colors inline-flex items-center text-sm shadow">
+                        <i class="fa-solid fa-ear-listen mr-2"></i> Escuchar Créditos
+                    </button>
+                    <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-600 text-xl transition-colors"><i class="fa-solid fa-circle-stop"></i></button>
+                </div>
+            </div>
+
+            <div class="space-y-4 font-serif text-lg text-ink leading-relaxed text-justify">
+                <p>El juego <strong>Grito de Libertad</strong> está publicado bajo licencia Creative Commons <em>CC BY-NC-SA 4.0</em>. Fue creado a partir de los contenidos de la unidad curricular de Historia de 6.º grado de Educación Primaria, siguiendo el programa oficial de ANEP (2023).</p>
+                <p>Las imágenes, textos y música fueron generados con Google Gemini, bajo la dirección y edición individual de su autor, <strong>Pablo Casaretto</strong>, estudiante de 1.º año de Magisterio en el IFD Canelones “Juan Amós Comenio”.</p>
+                <p>Este proyecto se inspira en el enfoque del <strong>Diseño Universal para el Aprendizaje (DUA)</strong>, que busca garantizar la equidad educativa ofreciendo distintas formas de representación, acción y participación. Al integrar recursos visuales, sonoros e interactivos (como la lectura por voz global), el juego permite que cada estudiante encuentre su propio camino para comprender y disfrutar la historia, asegurando accesibilidad y motivación en el aprendizaje.</p>
+            </div>
+            <div class="mt-8 text-center pt-6 border-t-2 border-oil-brown/30">
+                <button onclick="closeCredits()" class="bg-oil-red hover:bg-yellow-600 hover:text-oil-dark text-parchment-light font-title font-bold py-3 px-10 shadow-lg border border-oil-dark transition-transform hover:scale-105 rounded text-xl">
+                    Cerrar
+                </button>
             </div>
         </div>
     </div>
@@ -538,13 +655,73 @@
             </div>
 
             <div class="p-4 bg-oil-brown/10 border-t border-oil-brown">
-                <p class="text-sm font-bold text-oil-dark mb-2 uppercase tracking-wider">Preguntas disponibles:</p>
+                <p class="text-sm font-bold text-oil-dark mb-2 uppercase tracking-wider">Preguntas disponibles (Haz clic para preguntar):</p>
                 <div id="chat-options-container" class="flex flex-col gap-2"></div>
             </div>
         </div>
     </div>
 
     <script>
+        // --- SISTEMA DE ACCESIBILIDAD (TEXT-TO-SPEECH) ---
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Detiene audios previos
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'es-UY'; // Preferencia español uruguayo (si existe, sino usa español gral)
+                utterance.rate = 0.95; // Velocidad ligeramente reducida para mayor claridad
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("Tu navegador no soporta la función de lectura de voz por accesibilidad.");
+            }
+        }
+
+        function stopSpeaking() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+        }
+
+        // Lector adaptativo para la escena actual (lee narración y botones dinámicos)
+        function speakCurrentScene() {
+            const scene = gameData.scenes[currentSceneIndex];
+            const cleanText = scene.text.replace(/<[^>]*>?/gm, ''); // Quita etiquetas HTML
+            let fullText = `${scene.location}. Habla ${scene.character}: ${cleanText}. Ahora, selecciona tu decisión. Opciones: `;
+            
+            const choicesDiv = document.getElementById('choices-container');
+            const buttons = choicesDiv.querySelectorAll('button');
+            buttons.forEach((btn, index) => {
+                fullText += `Opción ${index + 1}: ${btn.innerText}. `;
+            });
+            
+            speakText(fullText);
+        }
+
+        function speakFeedback() {
+            const title = document.getElementById('feedback-title').innerText;
+            const exp = document.getElementById('feedback-explanation').innerText;
+            speakText(`${title}. ${exp}`);
+        }
+
+        function speakEnding() {
+            const title = document.getElementById('ending-title').innerText;
+            const text = document.getElementById('ending-text').innerText;
+            const score = document.getElementById('final-score-number').innerText;
+            const msg = document.getElementById('score-message').innerText;
+            speakText(`${title}. ${text}. Tu nota en el boletín es: ${score}. ${msg}`);
+        }
+
+        function speakEscapeStep() {
+            const title = document.getElementById('escape-question-title').innerText;
+            const verse = document.getElementById('escape-question-text').innerText;
+            let fullText = `${title}. Completa el verso: ${verse}. Opciones disponibles: `;
+            
+            const buttons = document.getElementById('escape-choices').querySelectorAll('button');
+            buttons.forEach((btn, index) => fullText += `Opción ${index + 1}: ${btn.innerText}. `);
+            
+            speakText(fullText);
+        }
+
+        // --- DATA DEL JUEGO ---
         const gameData = {
             scenes: [
                 {
@@ -774,6 +951,7 @@
         }
 
         function initGame() {
+            stopSpeaking();
             document.getElementById('screen-intro').classList.add('hidden');
             document.getElementById('screen-game').classList.remove('hidden');
             document.getElementById('map-banner').classList.remove('hidden');
@@ -820,6 +998,7 @@
         }
 
         function handleChoice(choiceIndex) {
+            stopSpeaking();
             const scene = gameData.scenes[currentSceneIndex];
             const choice = scene.choices[choiceIndex];
 
@@ -847,12 +1026,14 @@
         }
 
         function continueAfterFeedback() {
+            stopSpeaking();
             document.getElementById('feedback-overlay').classList.add('hidden');
             advanceScene();
         }
 
         function advanceScene() {
             currentSceneIndex++;
+            stopSpeaking();
             if (currentSceneIndex < gameData.scenes.length) {
                 loadScene();
             } else {
@@ -897,13 +1078,11 @@
             
             const victoryBg = document.getElementById('victory-bg');
             
-            // Configuración Base de Bandera si aprueba
             if(calificacion >= 7 && calificacion < 12) {
                 victoryBg.classList.remove('hidden');
                 victoryBg.classList.replace('opacity-100', 'opacity-20'); 
             }
 
-            // CONSAGRACIÓN ÉPICA DEL 12
             if(calificacion === 12) {
                 title.innerText = "¡HÉROE DE LA PATRIA!";
                 title.classList.replace('text-oil-dark', 'text-yellow-400');
@@ -920,7 +1099,6 @@
                 
                 document.getElementById('sunburst-fx').classList.remove('hidden');
                 
-                // Bandera Full Color y Panel oscuro (Glassmorphism)
                 victoryBg.classList.remove('hidden');
                 victoryBg.classList.replace('opacity-10', 'opacity-100');
                 victoryBg.classList.replace('opacity-20', 'opacity-100');
@@ -928,7 +1106,6 @@
                 document.getElementById('ending-content-wrapper').classList.add('bg-black/70', 'backdrop-blur-sm', 'p-10', 'rounded-xl', 'border-4', 'border-yellow-500', 'shadow-2xl');
                 document.getElementById('ending-text').classList.replace('text-ink', 'text-white');
                 
-                // Desbloquear Cofre Misterioso
                 const btnEscape = document.getElementById('btn-escape-room');
                 btnEscape.classList.remove('hidden');
             }
@@ -946,6 +1123,7 @@
         let escapeCurrentStep = 0;
 
         function startEscapeRoom() {
+            stopSpeaking();
             document.getElementById('screen-ending').classList.add('hidden');
             document.getElementById('screen-escape-room').classList.remove('hidden');
             document.getElementById('escape-prep-phase').classList.remove('hidden');
@@ -955,6 +1133,7 @@
         }
 
         function beginEscapeChallenge() {
+            stopSpeaking();
             document.getElementById('escape-prep-phase').classList.add('hidden');
             document.getElementById('escape-challenge-phase').classList.remove('hidden');
             loadEscapeStep();
@@ -981,6 +1160,7 @@
         }
 
         function handleEscapeChoice(originalIndex) {
+            stopSpeaking();
             if (originalIndex === escapeRoomData[escapeCurrentStep].correct) {
                 escapeCurrentStep++;
                 if (escapeCurrentStep >= escapeRoomData.length) escapeSuccess();
@@ -1046,21 +1226,24 @@
         }
 
         function exitEscapeRoom() {
+            stopSpeaking();
             document.getElementById('screen-escape-room').classList.add('hidden');
             document.getElementById('screen-ending').classList.remove('hidden');
         }
 
-        // --- FUNCIONES UI AUXILIARES ---
+        // --- FUNCIONES UI AUXILIARES Y MODALES ---
         function showGlossary(word, meaning) {
             document.getElementById('glossary-title').innerText = word;
             document.getElementById('glossary-meaning').innerText = meaning;
             document.getElementById('glossary-modal').classList.remove('hidden');
         }
-        function closeGlossary(e) { document.getElementById('glossary-modal').classList.add('hidden'); }
+        function closeGlossary(e) { stopSpeaking(); document.getElementById('glossary-modal').classList.add('hidden'); }
         function showInstructions() { document.getElementById('instructions-modal').classList.remove('hidden'); }
-        function closeInstructions() { document.getElementById('instructions-modal').classList.add('hidden'); }
+        function closeInstructions() { stopSpeaking(); document.getElementById('instructions-modal').classList.add('hidden'); }
         function showLyrics() { document.getElementById('lyrics-modal').classList.remove('hidden'); }
-        function closeLyrics() { document.getElementById('lyrics-modal').classList.add('hidden'); }
+        function closeLyrics() { stopSpeaking(); document.getElementById('lyrics-modal').classList.add('hidden'); }
+        function showCredits() { document.getElementById('credits-modal').classList.remove('hidden'); }
+        function closeCredits() { stopSpeaking(); document.getElementById('credits-modal').classList.add('hidden'); }
 
         function openChat() {
             const scene = gameData.scenes[currentSceneIndex];
@@ -1068,10 +1251,21 @@
             document.getElementById('chat-header-avatar').src = scene.image;
             
             const chatHistory = document.getElementById('chat-history');
+            const greetingId = 'chat-greet-' + Date.now();
             chatHistory.innerHTML = `
-                <div class="bg-white/70 p-3 rounded-lg border border-oil-brown/30 shadow-sm self-start max-w-[80%] flex items-start gap-3">
-                    <img src="${scene.image}" class="w-8 h-8 rounded-full border border-oil-brown object-cover" onerror="this.src='https://placehold.co/150/5c4033/f5deb3?text=R'" alt="Avatar">
-                    <p class="mt-1">Saludos. Selecciona una de las preguntas debajo para conversar conmigo.</p>
+                <div class="bg-white/70 p-3 rounded-lg border border-oil-brown/30 shadow-sm self-start max-w-[80%] flex flex-col gap-2">
+                    <div class="flex items-start gap-3">
+                        <img src="${scene.image}" class="w-8 h-8 rounded-full border border-oil-brown object-cover" onerror="this.src='https://placehold.co/150/5c4033/f5deb3?text=R'" alt="Avatar">
+                        <p class="mt-1" id="${greetingId}">Saludos. Selecciona una de las preguntas debajo para conversar conmigo.</p>
+                    </div>
+                    <div class="flex justify-end gap-2 border-t border-oil-brown/20 pt-2 mt-1">
+                        <button onclick="speakText(document.getElementById('${greetingId}').innerText)" class="text-oil-brown hover:text-yellow-600 text-sm font-bold transition-colors" title="Escuchar saludo">
+                            <i class="fa-solid fa-ear-listen"></i> Escuchar
+                        </button>
+                        <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-600 text-sm transition-colors" title="Detener audio">
+                            <i class="fa-solid fa-circle-stop"></i>
+                        </button>
+                    </div>
                 </div>
             `;
 
@@ -1079,19 +1273,32 @@
             optionsContainer.innerHTML = '';
             
             scene.questions.forEach((qObj) => {
-                const btn = document.createElement('button');
-                btn.className = 'w-full text-left bg-parchment-light hover:bg-yellow-600 hover:text-oil-dark text-oil-dark font-body py-2 px-4 rounded border border-oil-brown/50 transition-colors text-sm';
-                btn.innerText = qObj.q;
-                btn.onclick = () => handleChatQuestion(qObj.q, qObj.a, scene.image);
-                optionsContainer.appendChild(btn);
+                const row = document.createElement('div');
+                row.className = 'flex gap-2 w-full items-stretch';
+
+                const btnSpeak = document.createElement('button');
+                btnSpeak.className = 'flex-shrink-0 bg-oil-brown/20 hover:bg-yellow-600 hover:text-oil-dark text-oil-dark px-3 rounded border border-oil-brown/50 transition-colors flex items-center justify-center';
+                btnSpeak.innerHTML = '<i class="fa-solid fa-ear-listen"></i>';
+                btnSpeak.onclick = () => speakText(qObj.q);
+                btnSpeak.title = "Escuchar esta pregunta";
+
+                const btnAsk = document.createElement('button');
+                btnAsk.className = 'flex-grow text-left bg-parchment-light hover:bg-yellow-600 hover:text-oil-dark text-oil-dark font-body py-2 px-4 rounded border border-oil-brown/50 transition-colors text-sm';
+                btnAsk.innerText = qObj.q;
+                btnAsk.onclick = () => handleChatQuestion(qObj.q, qObj.a, scene.image);
+                
+                row.appendChild(btnSpeak);
+                row.appendChild(btnAsk);
+                optionsContainer.appendChild(row);
             });
 
             document.getElementById('ai-chat-modal').classList.remove('hidden');
         }
 
-        function closeChat() { document.getElementById('ai-chat-modal').classList.add('hidden'); }
+        function closeChat() { stopSpeaking(); document.getElementById('ai-chat-modal').classList.add('hidden'); }
 
         function handleChatQuestion(question, answer, avatarSrc) {
+            stopSpeaking();
             const chatHistory = document.getElementById('chat-history');
             chatHistory.innerHTML += `
                 <div class="bg-oil-brown text-parchment-light p-3 rounded-lg border border-oil-dark shadow-sm self-end max-w-[80%] ml-auto mt-4">
@@ -1100,11 +1307,22 @@
             `;
             chatHistory.scrollTop = chatHistory.scrollHeight;
 
+            const msgId = 'chat-ans-' + Date.now();
             setTimeout(() => {
                 chatHistory.innerHTML += `
-                    <div class="bg-white/70 p-3 rounded-lg border border-oil-brown/30 shadow-sm self-start max-w-[80%] flex items-start gap-3 mt-4 slide-up">
-                        <img src="${avatarSrc}" class="w-8 h-8 rounded-full object-cover border border-oil-brown" onerror="this.src='https://placehold.co/150/5c4033/f5deb3?text=R'" alt="Avatar">
-                        <p class="mt-1">${answer}</p>
+                    <div class="bg-white/70 p-3 rounded-lg border border-oil-brown/30 shadow-sm self-start max-w-[80%] flex flex-col gap-2 mt-4 slide-up">
+                        <div class="flex items-start gap-3">
+                            <img src="${avatarSrc}" class="w-8 h-8 rounded-full object-cover border border-oil-brown" onerror="this.src='https://placehold.co/150/5c4033/f5deb3?text=R'" alt="Avatar">
+                            <p class="mt-1" id="${msgId}">${answer}</p>
+                        </div>
+                        <div class="flex justify-end gap-2 border-t border-oil-brown/20 pt-2 mt-1">
+                            <button onclick="speakText(document.getElementById('${msgId}').innerText)" class="text-oil-brown hover:text-yellow-600 text-sm font-bold transition-colors" title="Escuchar respuesta">
+                                <i class="fa-solid fa-ear-listen"></i> Escuchar
+                            </button>
+                            <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-600 text-sm transition-colors" title="Detener audio">
+                                <i class="fa-solid fa-circle-stop"></i>
+                            </button>
+                        </div>
                     </div>
                 `;
                 chatHistory.scrollTop = chatHistory.scrollHeight;

@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Las Piedras 1811: La Campaña de Artigas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'oil-dark': '#2c1e16',
+                        'oil-brown': '#5c4033',
+                        'oil-gold': '#b8860b',
+                        'oil-red': '#8b0000',
+                        'parchment-light': '#f5deb3',
+                        'parchment-dark': '#d2b48c',
+                        'ink': '#1a1a1a'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+
+        :root {
+            --parchment-light: #f5deb3;
+            --parchment-dark: #d2b48c;
+            --oil-dark: #2c1e16;
+            --oil-brown: #5c4033;
+            --oil-gold: #b8860b;
+            --oil-red: #8b0000;
+            --ink: #1a1a1a;
+        }
+
+        body {
+            font-family: 'Lora', serif;
+            background-color: var(--oil-dark);
+            background-image: url('https://www.transparenttextures.com/patterns/wood-pattern.png');
+            color: var(--ink);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .font-title { font-family: 'Playfair Display', serif; }
+        .font-body { font-family: 'Lora', serif; }
+
+        .parchment-panel {
+            background-color: var(--parchment-light);
+            background-image: url('https://www.transparenttextures.com/patterns/stucco.png');
+            border: 2px solid var(--parchment-dark);
+            box-shadow: inset 0 0 20px rgba(139, 69, 19, 0.2), 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        .historical-portrait {
+            filter: sepia(0.4) contrast(1.1) brightness(0.9) saturate(0.8);
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+
+        .avatar-circle {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: top center;
+            border: 4px solid var(--oil-gold);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            filter: sepia(0.4) contrast(1.1) brightness(0.9) saturate(0.8);
+        }
+
+        .glossary-word {
+            color: var(--oil-red);
+            font-weight: bold;
+            cursor: pointer;
+            border-bottom: 2px dashed var(--oil-red);
+            transition: all 0.3s;
+        }
+
+        .glossary-word:hover {
+            background-color: rgba(139, 0, 0, 0.1);
+        }
+
+        .fade-in { animation: fadeIn 1s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .slide-up { animation: slideUp 0.5s ease-out; }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            25% {transform: translateX(-10px) rotate(-5deg);}
+            50% {transform: translateX(10px) rotate(5deg);}
+            75% {transform: translateX(-10px) rotate(-5deg);}
+        }
+        .animate-shake { animation: shake 0.4s ease-in-out; }
+
+        @keyframes spin-slow {
+            100% { transform: rotate(360deg); }
+        }
+        .sunburst {
+            background: repeating-conic-gradient(from 0deg, rgba(250, 204, 21, 0.3) 0deg 15deg, transparent 15deg 30deg);
+            animation: spin-slow 60s linear infinite;
+        }
+
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        /* --- ARREGLO DEL BANNER CARTOGRÁFICO --- */
+        .map-banner {
+            width: 100%;
+            background-color: var(--parchment-light);
+            background-image: url('https://www.transparenttextures.com/patterns/old-map.png');
+            border-bottom: 4px solid var(--oil-brown);
+            position: relative;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            z-index: 20;
+            overflow: hidden;
+            /* Se añade mucho espacio arriba para que la letra grande roja no se corte */
+            padding-top: 80px; 
+            padding-bottom: 40px; 
+        }
+        
+        .uruguay-watermark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            height: 250%;
+            opacity: 0.04;
+            pointer-events: none;
+        }
+
+        .map-nodes-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 40px;
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .map-line {
+            position: absolute;
+            /* La línea baja al 65% del contenedor, dejando muchísimo cielo despejado para los textos */
+            top: 65%; 
+            left: 40px;
+            right: 40px;
+            height: 6px;
+            background-color: var(--parchment-dark);
+            z-index: 1;
+            transform: translateY(-50%);
+            border-radius: 3px;
+        }
+
+        .map-line-progress {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background-color: var(--oil-red);
+            width: 0%;
+            transition: width 1s ease-in-out;
+            border-radius: 3px;
+        }
+
+        .map-node {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: var(--parchment-dark);
+            border: 3px solid var(--oil-brown);
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s;
+        }
+
+        .map-node.active {
+            background-color: var(--oil-gold);
+            border-color: var(--oil-dark);
+            transform: scale(1.4);
+            box-shadow: 0 0 15px var(--oil-gold);
+        }
+
+        .map-node.completed {
+            background-color: var(--oil-red);
+            border-color: var(--oil-dark);
+        }
+
+        .map-label {
+            position: absolute;
+            top: -35px; 
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--oil-dark);
+            opacity: 0.6;
+            transition: all 0.3s;
+            font-family: 'Playfair Display', serif;
+            text-shadow: 1px 1px 0px var(--parchment-light), -1px -1px 0px var(--parchment-light), 1px -1px 0px var(--parchment-light), -1px 1px 0px var(--parchment-light);
+        }
+
+        .map-node.active .map-label {
+            opacity: 1;
+            color: var(--oil-red);
+            font-size: 1.3rem;
+            top: -45px; 
+            text-shadow: 2px 2px 0px var(--parchment-light), -2px -2px 0px var(--parchment-light), 2px -2px 0px var(--parchment-light), -2px 2px 0px var(--parchment-light);
+        }
+
+        @media (max-width: 768px) {
+            .map-banner {
+                padding-top: 30px; 
+                padding-bottom: 90px; /* En celular damos más espacio abajo */
+            }
+            .map-line {
+                top: 40%; /* Subimos la línea en móvil porque los textos van hacia abajo */
+            }
+            .map-nodes-container { padding: 0 20px; }
+            .map-line { left: 20px; right: 20px; }
+            
+            .map-label {
+                transform: translateX(-50%) rotate(-45deg);
+                transform-origin: top left;
+                top: 30px; 
+                bottom: auto;
+                font-size: 0.6rem;
+            }
+            .map-node.active .map-label {
+                top: 35px;
+                bottom: auto;
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Estilo para el slider de volumen */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 16px;
+            width: 16px;
+            border-radius: 50%;
+            background: var(--oil-gold);
+            cursor: pointer;
+            margin-top: -6px;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: var(--oil-dark);
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Audio de Fondo (MP3) -->
+    <audio id="bg-music" loop>
+        <source src="La_patria_bajo_el_cielo_gris.mp3" type="audio/mpeg">
+        Tu navegador no soporta el elemento de audio.
+    </audio>
+
+    <!-- Panel Flotante de Control de Audio -->
+    <div class="fixed bottom-6 right-6 z-[90] flex items-center bg-oil-brown p-3 rounded-full shadow-2xl border-2 border-oil-gold fade-in">
+        <button onclick="toggleMusic()" class="text-oil-gold hover:text-white transition-colors flex items-center justify-center w-10 h-10" aria-label="Control de música">
+            <i id="music-icon" class="fa-solid fa-volume-xmark text-2xl"></i>
+        </button>
+        <div class="w-24 mx-2">
+            <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.2" class="w-full" oninput="changeVolume(this.value)" aria-label="Volumen de música">
+        </div>
+    </div>
+
+    <!-- Banner del Mapa Cartográfico -->
+    <div id="map-banner" class="map-banner hidden">
+        <svg class="uruguay-watermark" viewBox="0 0 400 400" fill="currentColor">
+            <path d="M120,40 C140,45 150,30 180,35 C200,40 220,50 240,45 C250,55 260,70 280,80 C290,110 320,130 310,160 C300,190 280,210 270,240 C260,260 250,280 230,290 C200,295 170,300 140,290 C110,280 90,260 70,240 C60,200 50,170 60,140 C70,110 90,80 120,40 Z"/>
+        </svg>
+        <div class="map-nodes-container" id="map-nodes">
+            <div class="map-line"><div class="map-line-progress" id="map-progress"></div></div>
+        </div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <main class="flex-grow flex flex-col justify-center items-center p-4 relative z-10 overflow-y-auto w-full">
+        
+        <!-- Pantalla de Inicio -->
+        <div id="screen-intro" class="max-w-4xl text-center fade-in parchment-panel overflow-hidden flex flex-col shadow-2xl w-full">
+            <div class="w-full h-64 md:h-96 relative border-b-4 border-oil-brown bg-oil-dark">
+                <!-- Video de fondo con fallback a imagen -->
+                <video src="video.mp4" autoplay loop muted playsinline class="w-full h-full object-cover object-center historical-portrait" onerror="this.outerHTML='<img src=\'portada.png\' alt=\'Batalla de Las Piedras\' class=\'w-full h-full object-cover object-center historical-portrait\'>'"></video>
+                <div class="absolute inset-0 bg-gradient-to-t from-[#eaddcf] to-transparent"></div>
+            </div>
+            
+            <div class="p-8 md:p-12 -mt-16 relative z-10">
+                <div class="mb-4 opacity-90 inline-block bg-[#eaddcf] p-4 rounded-full border-4 border-oil-brown shadow-lg">
+                    <i class="fa-solid fa-feather-pointed text-4xl text-oil-brown"></i>
+                </div>
+                <h2 class="text-4xl md:text-6xl font-title font-bold text-oil-dark mb-4 border-b-2 border-oil-brown pb-4 block">Grito de Libertad</h2>
+                <p class="text-lg md:text-2xl mb-4 font-serif text-ink leading-relaxed">
+                    El lienzo de la historia está en blanco. Te encuentras en 1811, bajo las órdenes de <strong>José Gervasio Artigas</strong>.
+                </p>
+
+                <!-- Botón de Accesibilidad de Lectura para la Intro -->
+                <div class="mb-8 flex justify-center items-center gap-2">
+                    <button onclick="speakText('Grito de Libertad. El lienzo de la historia está en blanco. Te encuentras en mil ochocientos once, bajo las órdenes de José Gervasio Artigas.')" class="bg-oil-brown hover:bg-yellow-600 hover:text-oil-dark text-parchment-light font-bold py-2 px-6 rounded-full transition-colors inline-flex items-center text-sm shadow border border-oil-gold">
+                        <i class="fa-solid fa-ear-listen mr-2"></i> Escuchar Introducción
+                    </button>
+                    <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-600 text-xl transition-colors align-middle" title="Detener audio">
+                        <i class="fa-solid fa-circle-stop"></i>
+                    </button>
+                </div>
+                
+                <div class="flex flex-col md:flex-row flex-wrap justify-center items-center gap-4 mt-2">
+                    <button onclick="initGame()" class="bg-oil-dark hover:bg-yellow-600 hover:text-oil-dark text-oil-gold font-title font-bold py-4 px-8 rounded text-lg shadow-2xl transition-all transform hover:scale-105 border-2 border-oil-gold w-full md:w-auto flex justify-center items-center">
+                        <i class="fa-solid fa-play mr-3"></i> Comenzar la Campaña
+                    </button>
+                    <button onclick="showInstructions()" class="bg-transparent hover:bg-yellow-600 hover:text-oil-dark text-oil-dark font-title font-bold py-4 px-8 rounded text-lg shadow border-2 border-oil-dark transition-all transform hover:scale-105 w-full md:w-auto flex justify-center items-center">
+                        <i class="fa-solid fa-scroll mr-3"></i> Cómo Jugar
+                    </button>
+                    <button onclick="showLyrics()" class="bg-oil-brown hover:bg-yellow-600 hover:text-oil-dark text-parchment-light font-title font-bold py-4 px-8 rounded text-lg shadow border-2 border-parchment-dark transition-all transform hover:scale-105 w-full md:w-auto flex justify-center items-center">
+                        <i class="fa-solid fa-music mr-3"></i> Canto de la Patria
+                    </button>
+                    <button onclick="showCredits()" class="bg-[#eaddcf] hover:bg-yellow-600 hover:text-oil-dark text-oil-dark font-title font-bold py-4 px-8 rounded text-lg shadow border-2 border-oil-brown transition-all transform hover:scale-105 w-full md:w-auto flex justify-center items-center">
+                        <i class="fa-solid fa-award mr-3"></i> Créditos
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pantalla de Juego -->
+        <div id="screen-game" class="hidden w-full max-w-6xl flex flex-col md:flex-row gap-8 mt-6">
+            <div class="w-full md:w-1/3 flex flex-col items-center gap-6">
+                <div class="parchment-panel p-6 w-full text-center flex flex-col items-center relative">
+                    <h2 id="scene-location" class="text-2xl font-title font-bold text-oil-red mb-2 uppercase tracking-wider border-b border-oil-brown pb-2 w-full">Cargando...</h2>
+                    <h3 id="scene-character" class="text-lg font-serif font-bold text-oil-dark mb-4">Cargando...</h3>
+                    
+                    <div class="relative mb-6">
+                        <img id="scene-image" src="" alt="Personaje" class="avatar-circle" onerror="this.onerror=null; this.src='https://placehold.co/150x150/5c4033/f5deb3?text=Retrato';">
+                    </div>
+                    
+                    <button onclick="openChat()" class="w-full bg-oil-gold hover:bg-yellow-600 hover:text-oil-dark text-oil-dark font-title font-bold py-3 px-6 rounded shadow-lg border border-oil-brown transition-colors">
+                        <i class="fa-solid fa-comments mr-2"></i> Interrogar
+                    </button>
+                </div>
+            </div>
+
+            <div class="w-full md:w-2/3 flex flex-col gap-6">
+                <div class="parchment-panel p-8 md:p-10 text-lg md:text-xl font-body leading-relaxed shadow-xl relative min-h-[400px] flex flex-col justify-between">
+                    
+                    <div id="feedback-overlay" class="hidden absolute inset-0 z-20 flex flex-col justify-center items-center p-8 text-center fade-in text-parchment-light rounded">
+                        <i id="feedback-icon" class="text-5xl mb-4"></i>
+                        <h3 id="feedback-title" class="text-3xl font-title font-bold mb-4">Título del Feedback</h3>
+                        <p id="feedback-explanation" class="text-xl mb-6 leading-relaxed">Explicación aquí.</p>
+                        
+                        <!-- Botón de Accesibilidad en Retroalimentación -->
+                        <div class="mb-6 flex gap-2 justify-center items-center">
+                            <button onclick="speakFeedback()" class="bg-black/40 hover:bg-yellow-600 hover:text-oil-dark text-white font-bold py-2 px-5 rounded-full transition-colors inline-flex items-center text-sm shadow border border-white/20">
+                                <i class="fa-solid fa-ear-listen mr-2"></i> Escuchar Explicación
+                            </button>
+                            <button onclick="stopSpeaking()" class="text-white hover:text-red-400 text-xl transition-colors" title="Detener audio">
+                                <i class="fa-solid fa-circle-stop"></i>
+                            </button>
+                        </div>
+
+                        <button id="feedback-continue-btn" onclick="continueAfterFeedback()" class="font-bold py-3 px-8 rounded shadow-lg transition-transform transform hover:scale-105">
+                            Continuar la Marcha <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+
+                    <div id="narrative-content">
+                        <!-- Barra de Accesibilidad para Escena y Opciones -->
+                        <div class="flex justify-between items-center mb-6 border-b border-oil-brown/20 pb-3">
+                            <button onclick="speakCurrentScene()" class="bg-oil-brown hover:bg-yellow-600 hover:text-oil-dark text-parchment-light font-bold py-1.5 px-4 rounded-full transition-colors inline-flex items-center text-sm shadow">
+                                <i class="fa-solid fa-ear-listen mr-2"></i> Narrar Escena y Opciones
+                            </button>
+                            <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-600 text-2xl transition-colors" title="Detener lectura">
+                                <i class="fa-solid fa-circle-stop"></i>
+                            </button>
+                        </div>
+
+                        <p id="scene-text" class="mb-8">Texto de la escena...</p>
+                        <div id="choices-container" class="space-y-4"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pantalla de Fin de Juego -->
+        <div id="screen-ending" class="hidden w-full max-w-3xl text-center fade-in parchment-panel p-10 shadow-2xl relative overflow-hidden">
+            <div id="sunburst-fx" class="hidden absolute inset-0 sunburst pointer-events-none z-0"></div>
+            
+            <div id="victory-bg" class="hidden absolute inset-0 opacity-10 pointer-events-none transition-all duration-1000 z-0">
+                <div class="w-full h-1/3 bg-blue-800"></div>
+                <div class="w-full h-1/3 bg-white relative overflow-hidden">
+                    <div class="absolute top-0 bottom-0 left-0 right-0" style="background: linear-gradient(to bottom right, transparent 45%, #b91c1c 45%, #b91c1c 55%, transparent 55%);"></div>
+                </div>
+                <div class="w-full h-1/3 bg-blue-800"></div>
+            </div>
+
+            <div class="relative z-10 transition-all duration-700" id="ending-content-wrapper">
+                <h2 id="ending-title" class="text-5xl font-title font-bold text-oil-dark mb-6 border-b-2 border-oil-brown pb-4 transition-colors">Resultado</h2>
+                
+                <!-- Botón de Accesibilidad en Resultado -->
+                <div class="mb-6 flex justify-center items-center gap-2">
+                    <button onclick="speakEnding()" class="bg-oil-brown hover:bg-yellow-600 hover:text-oil-dark text-parchment-light font-bold py-1.5 px-5 rounded-full transition-colors inline-flex items-center text-sm shadow">
+                        <i class="fa-solid fa-ear-listen mr-2"></i> Escuchar Boletín Final
+                    </button>
+                    <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-600 text-xl transition-colors" title="Detener audio">
+                        <i class="fa-solid fa-circle-stop"></i>
+                    </button>
+                </div>
+
+                <p id="ending-text" class="text-2xl mb-8 font-serif leading-relaxed text-ink">Texto final...</p>
+                
+                <div id="score-container" class="mb-8 bg-[#eaddcf] p-6 rounded border-2 border-oil-brown transition-all duration-700">
+                    <h3 class="text-2xl font-bold text-oil-dark mb-2">Boletín de Campaña</h3>
+                    <div class="text-6xl font-bold text-oil-red mb-4 transition-colors" id="final-score-number">12</div>
+                    <div id="stars-container" class="flex justify-center gap-2 text-3xl text-oil-gold mb-2"></div>
+                    <p id="score-message" class="font-serif italic text-lg text-oil-dark">Mensaje</p>
+                </div>
+
+                <div class="flex flex-col md:flex-row justify-center items-center gap-4 mt-6">
+                    <button onclick="location.reload()" class="bg-oil-dark hover:bg-yellow-600 hover:text-oil-dark text-oil-gold font-title font-bold py-3 px-8 rounded text-xl shadow-lg border-2 border-oil-gold transition-all transform hover:scale-105 w-full md:w-auto">
+                        <i class="fa-solid fa-rotate-left mr-2"></i> Jugar de Nuevo
+                    </button>
+                    <button id="btn-escape-room" onclick="startEscapeRoom()" class="hidden bg-oil-red hover:bg-red-900 text-parchment-light font-title font-bold py-3 px-8 rounded text-xl shadow-[0_0_15px_rgba(139,0,0,0.8)] border-2 border-oil-gold transition-all transform hover:scale-105 animate-pulse w-full md:w-auto">
+                        <i class="fa-solid fa-gem mr-2"></i> El Cofre Misterioso
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pantalla del Cofre Misterioso (Sala de Escape) -->
+        <div id="screen-escape-room" class="hidden w-full max-w-4xl text-center fade-in parchment-panel p-10 shadow-2xl relative bg-oil-dark">
+            <div class="absolute inset-0 bg-black/60"></div>
+            <div class="relative z-10 text-parchment-light">
+                <h2 class="text-4xl md:text-5xl font-title font-bold text-oil-gold mb-6 border-b-2 border-oil-gold pb-4"><i class="fa-solid fa-gem mr-3"></i> El Cofre de la Patria</h2>
+
+                <!-- Fase 1: Preparación -->
+                <div id="escape-prep-phase">
+                    <p id="escape-prep-text" class="text-xl mb-4 font-serif leading-relaxed text-parchment-dark">
+                        Has demostrado ser digno. Ante ti descansa un cofre legendario. Para abrirlo, deberás completar con precisión absoluta los versos que forjaron nuestra identidad. <strong>Un solo error sellará la cerradura para siempre.</strong>
+                    </p>
+
+                    <div class="mb-6 flex justify-center items-center gap-2">
+                        <button onclick="speakText(document.getElementById('escape-prep-text').innerText)" class="bg-black/50 hover:bg-yellow-600 hover:text-oil-dark text-parchment-light font-bold py-2 px-5 rounded-full transition-colors inline-flex items-center text-sm border border-oil-gold/30">
+                            <i class="fa-solid fa-ear-listen mr-2"></i> Leer Reto
+                        </button>
+                        <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-400 text-xl transition-colors">
+                            <i class="fa-solid fa-circle-stop"></i>
+                        </button>
+                    </div>
+
+                    <button onclick="toggleMusic()" class="mb-6 bg-oil-brown hover:bg-yellow-600 hover:text-oil-dark text-oil-gold font-title font-bold py-3 px-8 rounded-full shadow-lg border-2 border-oil-gold transition-all transform hover:scale-105">
+                        <i class="fa-solid fa-music mr-2"></i> Reproducir / Pausar Música
+                    </button>
+
+                    <div class="bg-[#eaddcf] text-oil-dark p-6 rounded border-4 border-oil-brown max-w-2xl mx-auto shadow-inner text-left overflow-y-auto max-h-64 mb-8 font-serif text-base leading-relaxed">
+                        <p><strong>[Verso 1]</strong><br>La tierra tiembla bajo el paso del destino,<br>el humo negro cubre el viejo camino.<br>No es odio, es la sangre de esta tierra viva,<br>que rompe el hierro, que la cadena derriba.</p><br>
+                        <p><strong>[Estribillo]</strong><br>¡Es el grito de libertad!<br>La tempestad se desata en el llano,<br>el pueblo forja su propia mano.<br>Las piedras arden bajo el cielo gris,<br>renace la patria en este matiz.</p><br>
+                        <p><strong>[Puente]</strong><br>«Clemencia para los vencidos...»<br>La voz ordena sobre los caídos.<br>Curad las heridas del que suplicó,<br>pues la victoria el rencor terminó.</p><br>
+                        <p><strong>[Clímax]</strong><br>«¡Sean los orientales tan ilustrados!»<br>¡Como valientes por la tierra luchando!</p><br>
+                        <p><strong>[Estribillo Final]</strong><br>¡Grito de libertad!<br>Nuestra ley, nuestra fe.<br>Desde este suelo sagrado, no hay quien nos desvíe.</p><br>
+                        <p><strong>[Cierre]</strong><br>El sol se oculta, la causa ha vencido...<br>Libertad es el nombre de lo construido.</p>
+                    </div>
+
+                    <button onclick="beginEscapeChallenge()" class="bg-oil-red hover:bg-red-900 text-parchment-light font-title font-bold py-4 px-10 rounded text-xl shadow-[0_0_15px_rgba(139,0,0,0.8)] border-2 border-oil-gold transition-all transform hover:scale-105 animate-pulse w-full md:w-auto">
+                        <i class="fa-solid fa-key mr-2"></i> Desbloquear Candado
+                    </button>
+                </div>
+
+                <!-- Fase 2: Acertijos -->
+                <div id="escape-challenge-phase" class="hidden">
+                    <div id="escape-lock-status" class="text-6xl mb-6 text-oil-gold transition-colors duration-300">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <div class="bg-[#eaddcf] text-oil-dark p-8 rounded border-4 border-oil-gold max-w-2xl mx-auto shadow-2xl relative">
+                        
+                        <div class="absolute top-4 right-4 flex gap-2">
+                            <button onclick="speakEscapeStep()" class="bg-oil-brown hover:bg-yellow-600 hover:text-oil-dark text-white font-bold py-1 px-3 rounded-full transition-colors inline-flex items-center text-xs shadow">
+                                <i class="fa-solid fa-ear-listen"></i>
+                            </button>
+                            <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-600 text-lg transition-colors">
+                                <i class="fa-solid fa-circle-stop"></i>
+                            </button>
+                        </div>
+
+                        <h3 id="escape-question-title" class="text-2xl font-bold mb-4 uppercase tracking-widest text-oil-red pt-4">Mecanismo 1</h3>
+                        <p id="escape-question-text" class="text-2xl font-serif mb-8 italic">«...»</p>
+                        
+                        <div id="escape-choices" class="flex flex-col gap-4">
+                            <!-- Opciones inyectadas -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fase 3: Resultados -->
+                <div id="escape-result-phase" class="hidden mt-8">
+                    <!-- Contenido inyectado por JS -->
+                </div>
+
+                <button onclick="exitEscapeRoom()" class="mt-12 bg-transparent hover:bg-white/10 text-parchment-dark font-bold py-2 px-6 rounded border border-parchment-dark transition-colors">
+                    Volver al Boletín
+                </button>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Pie de página con licencia -->
+    <footer class="w-full text-center pb-2 pt-4 z-20 relative mt-auto text-parchment-dark opacity-80" style="font-family: Arial, sans-serif; font-size: 10px;">
+        Grito de Libertad &copy; 2026 by Pablo Casaretto is licensed under CC BY-NC-SA 4.0
+    </footer>
+
+    <!-- Modal del Glosario -->
+    <div id="glossary-modal" class="fixed inset-0 modal-overlay hidden z-[100] flex items-center justify-center p-4" onclick="closeGlossary(event)">
+        <div class="parchment-panel max-w-sm w-full p-6 text-center transform shadow-2xl border-4 border-oil-gold" onclick="event.stopPropagation()">
+            <i class="fa-solid fa-book-open text-4xl text-oil-red mb-4"></i>
+            <h4 id="glossary-title" class="text-2xl font-title font-bold text-oil-dark border-b border-oil-brown pb-2 mb-4 uppercase">Palabra</h4>
+            <p id="glossary-meaning" class="text-lg font-body text-ink leading-relaxed italic"></p>
+            
+            <div class="mt-4 flex justify-center gap-2">
+                <button onclick="speakText(document.getElementById('glossary-title').innerText + '. Significa: ' + document.getElementById('glossary-meaning').innerText)" class="bg-oil-brown hover:bg-yellow-600 hover:text-oil-dark text-white font-bold py-1 px-3 rounded-full transition-colors inline-flex items-center text-xs shadow">
+                    <i class="fa-solid fa-ear-listen mr-1"></i> Leer
+                </button>
+                <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-600 text-lg transition-colors">
+                    <i class="fa-solid fa-circle-stop"></i>
+                </button>
+            </div>
+
+            <button onclick="closeGlossary(event)" class="mt-6 text-sm font-title font-bold text-oil-brown hover:text-yellow-600 hover:text-oil-dark transition-colors underline">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Modal de Instrucciones -->
+    <div id="instructions-modal" class="fixed inset-0 modal-overlay hidden z-[100] flex items-center justify-center p-4" onclick="closeInstructions()">
+        <div class="parchment-panel max-w-2xl w-full p-8 relative transform shadow-2xl border-4 border-oil-dark rounded-lg" onclick="event.stopPropagation()">
+            <button onclick="closeInstructions()" class="absolute top-4 right-4 text-oil-dark hover:text-oil-red text-2xl transition-colors"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="flex flex-col items-center mb-6 border-b-2 border-oil-brown pb-3">
+                <h3 class="text-3xl font-title font-bold text-oil-dark"><i class="fa-solid fa-map-location-dot mr-3 text-oil-red"></i> Manual de Campaña</h3>
+                <div class="mt-3 flex gap-2">
+                    <button onclick="speakText('Manual de Campaña. Avanza en el mapa leyendo la historia y seleccionando la respuesta correcta. Dialoga usando el botón interrogar. Aprende haciendo clic sobre las palabras subrayadas rojas. El misterio final: Si logras el 12 perfecto, desbloquearás un misterioso cofre.')" class="bg-oil-brown hover:bg-yellow-600 hover:text-oil-dark text-white font-bold py-1 px-4 rounded-full transition-colors inline-flex items-center text-sm shadow">
+                        <i class="fa-solid fa-ear-listen mr-2"></i> Escuchar Manual
+                    </button>
+                    <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-600 text-xl transition-colors"><i class="fa-solid fa-circle-stop"></i></button>
+                </div>
+            </div>
+
+            <ul class="space-y-6 font-serif text-lg text-ink">
+                <li class="flex items-start gap-4">
+                    <div class="bg-oil-brown text-oil-gold p-3 rounded-full shadow-inner mt-1"><i class="fa-solid fa-route text-xl"></i></div>
+                    <div><strong>Avanza en el Mapa:</strong> Lee la historia y selecciona la respuesta correcta a cada dilema para avanzar por la ruta militar.</div>
+                </li>
+                <li class="flex items-start gap-4">
+                    <div class="bg-oil-brown text-oil-gold p-3 rounded-full shadow-inner mt-1"><i class="fa-solid fa-comments text-xl"></i></div>
+                    <div><strong>Dialoga:</strong> Usa el botón <em>"Interrogar"</em> para hacerle preguntas preparadas a los personajes de la época.</div>
+                </li>
+                <li class="flex items-start gap-4">
+                    <div class="bg-oil-brown text-oil-gold p-3 rounded-full shadow-inner mt-1"><i class="fa-solid fa-magnifying-glass text-xl"></i></div>
+                    <div><strong>Aprende:</strong> Haz clic sobre las palabras <span class="text-oil-red font-bold border-b-2 border-dashed border-oil-red cursor-pointer">subrayadas</span> para aprender su significado histórico.</div>
+                </li>
+                <li class="flex items-start gap-4">
+                    <div class="bg-oil-brown text-oil-gold p-3 rounded-full shadow-inner mt-1"><i class="fa-solid fa-gem text-xl"></i></div>
+                    <div><strong>El Misterio Final:</strong> Si demuestras una sabiduría perfecta y no cometes ningún error, desbloquearás el acceso a un misterioso cofre con un reto legendario.</div>
+                </li>
+            </ul>
+            <div class="mt-8 text-center pt-6 border-t-2 border-oil-brown/30">
+                <button onclick="closeInstructions()" class="bg-oil-red hover:bg-yellow-600 hover:text-oil-dark text-parchment-light font-title font-bold py-3 px-10 shadow-lg border border-oil-dark transition-transform hover:scale-105 rounded text-xl">
+                    Entendido, ¡A marchar!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Letras de Canto de la Patria -->
+    <div id="lyrics-modal" class="fixed inset-0 modal-overlay hidden z-[100] flex items-center justify-center p-4" onclick="closeLyrics()">
+        <div class="parchment-panel max-w-3xl w-full max-h-[90vh] overflow-y-auto p-8 relative transform shadow-2xl border-4 border-oil-dark rounded-lg" onclick="event.stopPropagation()">
+            <button onclick="closeLyrics()" class="absolute top-4 right-4 text-oil-dark hover:text-oil-red text-2xl transition-colors"><i class="fa-solid fa-xmark"></i></button>
+            <div class="text-center mb-6 border-b-2 border-oil-brown pb-4">
+                <i class="fa-solid fa-music text-3xl text-oil-red mb-2"></i>
+                <h3 class="text-3xl font-title font-bold text-oil-dark">La Patria Bajo el Cielo Gris</h3>
+                <div class="mt-3 flex justify-center gap-2">
+                    <button onclick="speakText('La Patria Bajo el Cielo Gris. Verso 1. La tierra tiembla bajo el paso del destino, el humo negro cubre el viejo camino. No es odio, es la sangre de esta tierra viva, que rompe el hierro, que la cadena derriba. Estribillo. ¡Es el grito de libertad! La tempestad se desata en el llano, el pueblo forja su propia mano. Las piedras arden bajo el cielo gris, renace la patria en este matiz.')" class="bg-oil-brown hover:bg-yellow-600 hover:text-oil-dark text-white font-bold py-1 px-4 rounded-full transition-colors inline-flex items-center text-sm shadow">
+                        <i class="fa-solid fa-ear-listen mr-2"></i> Narrar Letra (Fragmento)
+                    </button>
+                    <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-600 text-xl transition-colors"><i class="fa-solid fa-circle-stop"></i></button>
+                </div>
+            </div>
+            <div class="font-serif text-lg text-ink leading-relaxed space-y-6 px-4 md:px-12 text-center">
+                <div><span class="text-oil-red font-bold text-sm uppercase block mb-1">[Verso 1]</span>La tierra tiembla bajo el paso del destino,<br>el humo negro cubre el viejo camino.<br>No es odio, es la sangre de esta tierra viva,<br>que rompe el hierro, que la cadena derriba.</div>
+                <div><span class="text-oil-red font-bold text-sm uppercase block mb-1">[Estribillo]</span><strong>¡Es el grito de libertad!</strong><br>La tempestad se desata en el llano,<br>el pueblo forja su propia mano.<br>Las piedras arden bajo el cielo gris,<br>renace la patria en este matiz.</div>
+                <div><span class="text-oil-red font-bold text-sm uppercase block mb-1">[Puente]</span><em>«Clemencia para los vencidos...»</em><br>La voz ordena sobre los caídos.<br>Curad las heridas del que suplicó,<br>pues la victoria el rencor terminó.</div>
+                <div><span class="text-oil-red font-bold text-sm uppercase block mb-1">[Clímax]</span><em>«¡Sean los orientales tan ilustrados!»</em><br>¡Como valientes por la tierra luchando!</div>
+                <div><span class="text-oil-red font-bold text-sm uppercase block mb-1">[Estribillo Final]</span><strong>¡Grito de libertad!</strong><br>Nuestra ley, nuestra fe.<br>Desde este suelo sagrado, no hay quien nos desvíe.</div>
+                <div><span class="text-oil-red font-bold text-sm uppercase block mb-1">[Cierre]</span>El sol se oculta, la causa ha vencido...<br>Libertad es el nombre de lo construido.</div>
+            </div>
+            <div class="mt-8 text-center pt-6 border-t-2 border-oil-brown/30">
+                <button onclick="closeLyrics()" class="bg-oil-brown hover:bg-yellow-600 hover:text-oil-dark text-parchment-light font-bold py-3 px-10 rounded text-xl shadow border border-oil-dark transition-transform hover:scale-105">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Créditos -->
+    <div id="credits-modal" class="fixed inset-0 modal-overlay hidden z-[100] flex items-center justify-center p-4" onclick="closeCredits()">
+        <div class="parchment-panel max-w-3xl w-full max-h-[90vh] overflow-y-auto p-8 relative transform shadow-2xl border-4 border-oil-dark rounded-lg" onclick="event.stopPropagation()">
+            <button onclick="closeCredits()" class="absolute top-4 right-4 text-oil-dark hover:text-oil-red text-2xl transition-colors"><i class="fa-solid fa-xmark"></i></button>
+            
+            <div class="flex flex-col items-center mb-6 border-b-2 border-oil-brown pb-3">
+                <h3 class="text-3xl font-title font-bold text-oil-dark"><i class="fa-solid fa-award mr-3 text-oil-red"></i> Créditos – Grito de Libertad</h3>
+                <div class="mt-3 flex gap-2">
+                    <button onclick="speakText('Créditos. El juego Grito de Libertad está publicado bajo licencia Creative Commons. Fue creado a partir de los contenidos de Historia de sexto grado, siguiendo el programa de ANEP. Las imágenes y textos fueron generados con IA bajo la dirección de Pablo Casaretto. Se inspira en el Diseño Universal para el Aprendizaje, garantizando equidad educativa y accesibilidad.')" class="bg-oil-brown hover:bg-yellow-600 hover:text-oil-dark text-white font-bold py-1 px-4 rounded-full transition-colors inline-flex items-center text-sm shadow">
+                        <i class="fa-solid fa-ear-listen mr-2"></i> Escuchar Créditos
+                    </button>
+                    <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-600 text-xl transition-colors"><i class="fa-solid fa-circle-stop"></i></button>
+                </div>
+            </div>
+
+            <div class="space-y-4 font-serif text-lg text-ink leading-relaxed text-justify">
+                <p>El juego <strong>Grito de Libertad</strong> está publicado bajo licencia Creative Commons <em>CC BY-NC-SA 4.0</em>. Fue creado a partir de los contenidos de la unidad curricular de Historia de 6.º grado de Educación Primaria, siguiendo el programa oficial de ANEP (2023).</p>
+                <p>Las imágenes, textos y música fueron generados con Google Gemini, bajo la dirección y edición individual de su autor, <strong>Pablo Casaretto</strong>, estudiante de 1.º año de Magisterio en el IFD Canelones “Juan Amós Comenio”.</p>
+                <p>Este proyecto se inspira en el enfoque del <strong>Diseño Universal para el Aprendizaje (DUA)</strong>, que busca garantizar la equidad educativa ofreciendo distintas formas de representación, acción y participación. Al integrar recursos visuales, sonoros e interactivos (como la lectura por voz global), el juego permite que cada estudiante encuentre su propio camino para comprender y disfrutar la historia, asegurando accesibilidad y motivación en el aprendizaje.</p>
+            </div>
+            <div class="mt-8 text-center pt-6 border-t-2 border-oil-brown/30">
+                <button onclick="closeCredits()" class="bg-oil-red hover:bg-yellow-600 hover:text-oil-dark text-parchment-light font-title font-bold py-3 px-10 shadow-lg border border-oil-dark transition-transform hover:scale-105 rounded text-xl">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Chat -->
+    <div id="ai-chat-modal" class="fixed inset-0 modal-overlay hidden z-[100] flex items-center justify-center p-4">
+        <div class="bg-[#eaddcf] max-w-2xl w-full rounded-lg shadow-2xl overflow-hidden border-2 border-oil-brown flex flex-col h-[80vh]">
+            <div class="bg-oil-dark text-parchment-light p-4 flex justify-between items-center border-b-4 border-oil-gold">
+                <div class="flex items-center gap-3">
+                    <img id="chat-header-avatar" src="" class="w-12 h-12 rounded-full border-2 border-oil-gold object-cover" onerror="this.src='https://placehold.co/150/5c4033/f5deb3?text=R';" alt="Avatar">
+                    <h3 id="chat-character-name" class="text-xl font-title font-bold">Personaje</h3>
+                </div>
+                <button onclick="closeChat()" class="hover:text-oil-red text-2xl transition-colors"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div id="chat-history" class="flex-grow p-4 overflow-y-auto space-y-4 font-body text-ink bg-opacity-50" style="background-image: url('https://www.transparenttextures.com/patterns/aged-paper.png');">
+                <!-- Se inyectará por JS -->
+            </div>
+
+            <div class="p-4 bg-oil-brown/10 border-t border-oil-brown">
+                <p class="text-sm font-bold text-oil-dark mb-2 uppercase tracking-wider">Preguntas disponibles:</p>
+                <div id="chat-options-container" class="flex flex-col gap-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- SISTEMA DE ACCESIBILIDAD (TEXT-TO-SPEECH) CON VOCES ---
+        let availableVoices = [];
+
+        function loadVoices() {
+            availableVoices = window.speechSynthesis.getVoices();
+        }
+        
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+            loadVoices(); 
+        }
+
+        const voiceProfiles = {
+            "Miliciano (Liberto Oriental)": { pitch: 0.5, rate: 0.95, type: 'male' }, 
+            "Cacique Charrúa": { pitch: 0.1, rate: 0.75, type: 'male' }, 
+            "José Gervasio Artigas": { pitch: 0.3, rate: 0.9, type: 'male' }, 
+            "Maestro del Pueblo": { pitch: 0.8, rate: 0.9, type: 'male' }, 
+            "Gaucha Revolucionaria": { pitch: 1.6, rate: 1.05, type: 'female' }, 
+            "Sargento de Milicias": { pitch: 0.4, rate: 1.1, type: 'male' }, 
+            "Emisario Español": { pitch: 1.2, rate: 1.05, type: 'male' }, 
+            "Mujer Oriental": { pitch: 1.5, rate: 1.0, type: 'female' }, 
+            "default": { pitch: 1.0, rate: 0.95, type: 'female' }
+        };
+
+        function speakText(text, characterName = "default") {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                
+                const profile = voiceProfiles[characterName] || voiceProfiles["default"];
+                utterance.pitch = profile.pitch;
+                utterance.rate = profile.rate;
+                
+                let esVoices = availableVoices.filter(v => v.lang.startsWith('es'));
+                
+                if (esVoices.length > 0) {
+                    let localEsVoices = esVoices.filter(v => v.localService);
+                    let targetVoices = localEsVoices.length > 0 ? localEsVoices : esVoices;
+                    
+                    let selectedVoice = targetVoices[0];
+                    
+                    if (profile.type === 'male') {
+                        let maleVoice = targetVoices.find(v => !/(mujer|female|sabina|helena|laura|monica|paulina|victoria)/i.test(v.name));
+                        if(maleVoice) selectedVoice = maleVoice;
+                    } else {
+                        let femaleVoice = targetVoices.find(v => /(mujer|female|sabina|helena|laura|monica|paulina|victoria)/i.test(v.name));
+                        if(femaleVoice) selectedVoice = femaleVoice;
+                    }
+                    
+                    utterance.voice = selectedVoice;
+                    utterance.lang = selectedVoice.lang;
+                } else {
+                    utterance.lang = 'es-UY';
+                }
+                
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("Tu navegador no soporta la función de lectura de voz por accesibilidad.");
+            }
+        }
+
+        function stopSpeaking() {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+            }
+        }
+
+        function speakCurrentScene() {
+            const scene = gameData.scenes[currentSceneIndex];
+            const cleanText = scene.text.replace(/<[^>]*>?/gm, ''); 
+            let fullText = `${scene.location}. Habla ${scene.character}: ${cleanText}. Ahora, selecciona tu decisión. Opciones: `;
+            
+            const choicesDiv = document.getElementById('choices-container');
+            const buttons = choicesDiv.querySelectorAll('button');
+            buttons.forEach((btn, index) => {
+                fullText += `Opción ${index + 1}: ${btn.innerText}. `;
+            });
+            
+            speakText(fullText, scene.character);
+        }
+
+        function speakFeedback() {
+            const title = document.getElementById('feedback-title').innerText;
+            const exp = document.getElementById('feedback-explanation').innerText;
+            speakText(`${title}. ${exp}`);
+        }
+
+        function speakEnding() {
+            const title = document.getElementById('ending-title').innerText;
+            const text = document.getElementById('ending-text').innerText;
+            const score = document.getElementById('final-score-number').innerText;
+            const msg = document.getElementById('score-message').innerText;
+            speakText(`${title}. ${text}. Tu nota en el boletín es: ${score}. ${msg}`);
+        }
+
+        function speakEscapeStep() {
+            const title = document.getElementById('escape-question-title').innerText;
+            const verse = document.getElementById('escape-question-text').innerText;
+            let fullText = `${title}. Completa el verso: ${verse}. Opciones disponibles: `;
+            
+            const buttons = document.getElementById('escape-choices').querySelectorAll('button');
+            buttons.forEach((btn, index) => fullText += `Opción ${index + 1}: ${btn.innerText}. `);
+            
+            speakText(fullText);
+        }
+
+        // --- DATA DEL JUEGO ---
+        const gameData = {
+            scenes: [
+                {
+                    id: 0,
+                    location: "Mercedes (Abril 1811)",
+                    character: "Miliciano (Liberto Oriental)",
+                    image: "miliciano.png",
+                    text: "Nos hemos reunido en Mercedes, paisano. Artigas me dio este papel firmado por él mismo para convocar a la revolución. ¿Podrías decirme qué tipo de <span class='glossary-word' onclick='showGlossary(\"fuente histórica\", glossary[\"fuente histórica\"])'>fuente histórica</span> es esta proclama del 11 de abril?",
+                    questions: [
+                        { q: "¿Eras un esclavo antes de unirte?", a: "Muchos lo fuimos. Artigas prometió libertad a quienes pelearan por la patria. Esta lanza es mi boleto a la dignidad." },
+                        { q: "¿Qué dice exactamente la proclama?", a: "Dice '¡A la empresa compatriotas, que el triunfo es nuestro!' Nos llama a levantarnos." },
+                        { q: "Tienen suficientes armas?", a: "Más coraje que armas. Muchas son lanzas hechas con tijeras de esquilar atadas a cañas." }
+                    ],
+                    choices: [
+                        { text: "Es una fuente secundaria (escrita por un historiador hoy).", correct: false, explanation: "Las fuentes secundarias interpretan el pasado pero se escriben mucho después por historiadores. La Proclama es un documento de época, por lo tanto, una FUENTE PRIMARIA." },
+                        { text: "Es una fuente primaria (escrita en la época).", correct: true, explanation: "¡Excelente! Una fuente primaria es todo testimonio directo contemporáneo a los hechos creado por sus propios protagonistas." },
+                        { text: "Es una reliquia arqueológica.", correct: false, explanation: "Se trata de un documento escrito, no de un resto físico o monumento desenterrado. Los textos firmados en el momento son FUENTES PRIMARIAS escritas." }
+                    ]
+                },
+                {
+                    id: 1,
+                    location: "San José (Finales de Abril)",
+                    character: "Cacique Charrúa",
+                    image: "cacique.png",
+                    text: "Mis guerreros conocen esta tierra mejor que los españoles. Queremos unirnos a don José en San José. ¿Aceptas nuestra ayuda en la vanguardia?",
+                    questions: [
+                        { q: "¿Por qué apoyan a Artigas?", a: "Él conoce nuestras costumbres. Los españoles solo nos han quitado tierras." },
+                        { q: "¿Cómo pelean ustedes?", a: "Atacamos rápido con boleadoras y lanzas, y desaparecemos en el monte." },
+                        { q: "¿Cuántos guerreros traes?", a: "Los suficientes para que los maturrangos no duerman tranquilos." }
+                    ],
+                    choices: [
+                        { text: "No, las milicias regulares son suficientes.", correct: false, explanation: "Rechazar a los indígenas habría dejado al ejército sin exploradores tácticos. El auxilio de la caballería charrúa fue indispensable." },
+                        { text: "Sí, su conocimiento del terreno es vital.", correct: true, explanation: "¡Brillante! El conocimiento del monte y las tácticas de hostigamiento de los Charrúas brindaron una vanguardia formidable." }
+                    ]
+                },
+                {
+                    id: 2,
+                    location: "Paso del Rey (Inicios de Mayo)",
+                    character: "José Gervasio Artigas",
+                    image: "artigas.png",
+                    text: "El pueblo está tomando las riendas de su destino. ¿Cuál crees que es el principio político más importante que defendemos luchando por la emancipación?",
+                    questions: [
+                        { q: "¿Cuál es el objetivo, General?", a: "Avanzar hacia Montevideo, pero primero organizaremos nuestras fuerzas." },
+                        { q: "¿Qué opina de la Junta de Buenos Aires?", a: "Nos aliamos contra España, pero debemos mantener nuestra propia soberanía y no cambiar de amo." },
+                        { q: "¿Cómo ve a nuestra tropa?", a: "Es un Ejército Nuevo: paisanos, indios, gauchos... No hay disciplina europea, sobra fervor." }
+                    ],
+                    choices: [
+                        { text: "El respeto incondicional al Rey.", correct: false, explanation: "Nos estamos rebelando contra el absolutismo colonial. El principio correcto es la SOBERANÍA popular." },
+                        { text: "Crear un Imperio Sudamericano.", correct: false, explanation: "Artigas era republicano y federal, nunca buscó coronas imperiales, sino la SOBERANÍA de los pueblos." },
+                        { text: "La soberanía particular de los pueblos.", correct: true, explanation: "¡Es correcto! Para Artigas, la soberanía radicaba en los pueblos (provincias), quienes debían autogobernarse." }
+                    ]
+                },
+                {
+                    id: 3,
+                    location: "Villa del Pintado (Florida)",
+                    character: "Maestro del Pueblo",
+                    image: "maestro.jpg",
+                    text: "Mientras marchan, enseño a leer a los niños con proclamas. ¿Por qué crees que la educación es clave para el proyecto artiguista?",
+                    questions: [
+                        { q: "¿Qué enseña a los niños?", a: "A leer, escribir y pensar como ciudadanos libres." },
+                        { q: "La educación pública es apoyada por Artigas?", a: "Muchísimo. Una república no puede sostenerse sobre la ignorancia." },
+                        { q: "¿Hay mujeres en su escuela?", a: "Pocas por la época, pero la revolución está cambiando mentes." }
+                    ],
+                    choices: [
+                        { text: "Para entrenar soldados obedientes.", correct: false, explanation: "La educación pública apuntaba a forjar ciudadanos pensantes y autónomos, no soldados sumisos." },
+                        { text: "Para que los ciudadanos puedan defender sus derechos.", correct: true, explanation: "¡Perfecto! Artigas promovió la educación cívica para que los orientales fueran 'tan ilustrados como valientes'." },
+                        { text: "Solo para que sepan contar impuestos.", correct: false, explanation: "Para Artigas la educación era la herramienta esencial de libertad y conciencia ciudadana." }
+                    ]
+                },
+                {
+                    id: 4,
+                    location: "Guadalupe (Canelones)",
+                    character: "Gaucha Revolucionaria",
+                    image: "gaucha.jpg",
+                    text: "Traje caballos frescos, vendas y municiones. Las mujeres también sostenemos la revolución. ¿Cómo se le llama a este apoyo organizativo no combatiente?",
+                    questions: [
+                        { q: "¿Cuál es tu rol?", a: "Curo heridos, cocino y muchas veces sirvo de espía." },
+                        { q: "La logística es reconocida?", a: "Poco en los papeles, pero los soldados saben que sin nosotras no hay campamento." },
+                        { q: "No hay miedo a la batalla?", a: "El miedo se cura con mate. Mis hijos heredarán tierra libre." }
+                    ],
+                    choices: [
+                        { text: "Estrategia ofensiva.", correct: false, explanation: "La ofensiva es el ataque. Sostener el bienestar, sanidad y recursos de las tropas es la LOGÍSTICA MILITAR." },
+                        { text: "Guerra de guerrillas.", correct: false, explanation: "La guerrilla consiste en ataques sorpresivos. Proveer recursos y curar heridos es la LOGÍSTICA MILITAR." },
+                        { text: "Logística militar.", correct: true, explanation: "¡Exacto! El sistema de suministros, curaciones y transporte que sostiene a las tropas se denomina LOGÍSTICA MILITAR." }
+                    ]
+                },
+                {
+                    id: 5,
+                    location: "Arroyo Colorado (16 de Mayo)",
+                    character: "Sargento de Milicias",
+                    image: "sargento.png",
+                    text: "Los españoles de Posadas están cerca de Las Piedras. Tienen cañones y fusiles. ¿Qué <span class='glossary-word' onclick='showGlossary(\"táctica\", glossary[\"táctica\"])'>táctica</span> sugiere usar dado que somos caballería gaucha?",
+                    questions: [
+                        { q: "¿Cómo es el ejército de Posadas?", a: "Soldados profesionales, bien armados, pero lentos y no conocen el terreno." },
+                        { q: "Cuál es nuestra mayor ventaja táctica?", a: "Nuestros gauchos montan como centauros y son letales con la lanza." },
+                        { q: "¿Lloverá mañana?", a: "Las nubes están negras. Será un combate en el barro." }
+                    ],
+                    choices: [
+                        { text: "Formar en líneas rectas e intercambiar disparos.", correct: false, explanation: "Los realistas poseían mejores armas de fuego. Un duelo frontal estático nos habría diezmado." },
+                        { text: "Ataque frontal directo a los cañones.", correct: false, explanation: "Cargar de frente contra los cañones habría sido un desastre. Necesitábamos engaño y movilidad." },
+                        { text: "Fingir retirada para atraerlos y rodearlos con caballería.", correct: true, explanation: "¡Excelente maniobra! Al simular una huida, desorganizamos al ejército de Posadas y los atacamos en el llano." }
+                    ]
+                },
+                {
+                    id: 6,
+                    location: "Lomas (17 de Mayo)",
+                    character: "Emisario Español",
+                    image: "emisario.jpg",
+                    text: "El Virrey Elío en Montevideo aplastará esta rebelión de campesinos. ¿Acaso creéis que podéis gobernaros a vosotros mismos?",
+                    questions: [
+                        { q: "¿Cuántos cañones tienen?", a: "No os lo diré, rebelde. Pero vomitarán fuego." },
+                        { q: "¿Por qué nos llamas rebeldes?", a: "Habéis desconocido la autoridad legítima de España." },
+                        { q: "¿Te tratan bien como prisionero?", a: "Vuestro General dio órdenes de no maltratarme. Es un hombre de honor." }
+                    ],
+                    choices: [
+                        { text: "Luchamos por nuestros derechos, libertad y autogobierno.", correct: true, explanation: "¡Extraordinario! Reclamamos la soberanía para redactar nuestras propias leyes y liberarnos de la asfixia colonial." },
+                        { text: "Luchamos para hacernos ricos saqueando.", correct: false, explanation: "Artigas castigaba el saqueo. El motor era la libertad política y los legítimos derechos civiles." },
+                        { text: "Luchamos por defender el monopolio español.", correct: false, explanation: "Al contrario, el monopolio comercial ahogaba nuestra economía. Peleábamos por el libre desarrollo comercial." }
+                    ]
+                },
+                {
+                    id: 7,
+                    location: "Frente de Batalla (18 Mayo)",
+                    character: "José Gervasio Artigas",
+                    image: "artigas.png",
+                    text: "Es la hora. Posadas está elevado. El clima es lluvioso y el terreno es puro fango. ¿Cuál es la orden, oficial?",
+                    questions: [
+                        { q: "¿Cómo usaremos la infantería?", a: "Avanzarán por el centro para fijar a Posadas, mientras la caballería los rodea." },
+                        { q: "¿Qué pasa si perdemos?", a: "La revolución oriental morirá. Montevideo quedará libre de asedio." },
+                        { q: "¿Qué hacemos con sus cañones?", a: "El barro dificulta que los muevan. Hay que atacarlos rápido por los flancos." }
+                    ],
+                    choices: [
+                        { text: "Tocar retirada y huir a Buenos Aires.", correct: false, explanation: "Huir habría destruido la moral y dispersado la milicia, extinguiendo la revolución en el acto." },
+                        { text: "Avanzar y ejecutar la maniobra de pinza envolvente.", correct: true, explanation: "¡Maniobra brillante e histórica! El avance de la infantería por el centro y la caballería cerrando los flancos rodeó a Posadas." }
+                    ]
+                },
+                {
+                    id: 8,
+                    location: "Las Piedras (Victoria)",
+                    character: "Mujer Oriental",
+                    image: "mujer.png",
+                    text: "¡Vencimos! Los españoles se rindieron. Muchos paisanos quieren ejecutar a los prisioneros en venganza. ¿Qué frase inmortal debe pronunciar Artigas ahora?",
+                    questions: [
+                        { q: "Viste caer a Posadas?", a: "Entregó su espada. Artigas no la aceptó personalmente, mandó a un cura a recibirla por respeto." },
+                        { q: "¿Hay muchos heridos?", a: "Demasiados de ambos lados. El campo está cubierto de sangre y barro." },
+                        { q: "¿Qué pasará ahora?", a: "El camino hacia Montevideo está abierto. El cerco es inminente." }
+                    ],
+                    choices: [
+                        { text: "Maten a todos los españoles.", correct: false, explanation: "La ejecución habría deshonrado la revolución. Artigas promovió el respeto a la vida." },
+                        { text: "Envíenlos como esclavos a las minas.", correct: false, explanation: "El trato opresivo era ajeno a nuestros ideales. Artigas ordenó amparo médico para todos." },
+                        { text: "Clemencia para los vencidos, curad a los heridos.", correct: true, explanation: "¡Sublime gesto de nobleza! Artigas consagró con esta histórica orden la compasión y el humanitarismo." }
+                    ]
+                }
+            ]
+        };
+
+        const glossary = {
+            "fuente histórica": "Documentos o testimonios del pasado usados por los investigadores.",
+            "Proclama": "Anuncio público para movilizar políticamente a un pueblo.",
+            "soberanía": "El poder político supremo de un pueblo libre para autogobernarse.",
+            "Blandengues": "Cuerpo militar de caballería colonial clave en fronteras.",
+            "guerra de guerrillas": "Táctica de golpes sorpresivos y retiradas rápidas.",
+            "táctica": "Método o maniobra puntual para ganar un combate.",
+            "estrategia": "Plan general de campaña para lograr un objetivo de largo plazo."
+        };
+
+        let currentSceneIndex = 0;
+        let score = 0;
+        let isMusicPlaying = false;
+        const bgMusic = document.getElementById('bg-music');
+        const musicIcon = document.getElementById('music-icon');
+        const volumeSlider = document.getElementById('volume-slider');
+
+        function toggleMusic() {
+            if (isMusicPlaying) {
+                bgMusic.pause();
+                musicIcon.classList.remove('fa-volume-high');
+                musicIcon.classList.add('fa-volume-xmark');
+                isMusicPlaying = false;
+            } else {
+                bgMusic.volume = volumeSlider.value;
+                let playPromise = bgMusic.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(_ => {
+                        musicIcon.classList.remove('fa-volume-xmark');
+                        musicIcon.classList.add('fa-volume-high');
+                        isMusicPlaying = true;
+                    }).catch(err => console.log("Audio retenido:", err));
+                }
+            }
+        }
+
+        function changeVolume(val) {
+            bgMusic.volume = val;
+            if(val > 0 && !isMusicPlaying) toggleMusic();
+            else if (val == 0 && isMusicPlaying) toggleMusic();
+        }
+
+        function initMap() {
+            const container = document.getElementById('map-nodes');
+            const totalNodes = gameData.scenes.length;
+            container.innerHTML = '<div class="map-line"><div class="map-line-progress" id="map-progress"></div></div>';
+            
+            for (let i = 0; i < totalNodes; i++) {
+                const node = document.createElement('div');
+                node.className = `map-node ${i === 0 ? 'active' : ''}`;
+                node.id = `map-node-${i}`;
+                let shortName = gameData.scenes[i].location.split(' (')[0].split(',')[0];
+                node.innerHTML = `<span class="map-label">${shortName}</span>`;
+                container.appendChild(node);
+            }
+        }
+
+        function updateMap() {
+            const totalNodes = gameData.scenes.length;
+            const progressPercentage = (currentSceneIndex / (totalNodes - 1)) * 100;
+            document.getElementById('map-progress').style.width = `${progressPercentage}%`;
+
+            for (let i = 0; i < totalNodes; i++) {
+                const node = document.getElementById(`map-node-${i}`);
+                if(node) {
+                    if (i < currentSceneIndex) node.className = 'map-node completed';
+                    else if (i === currentSceneIndex) node.className = 'map-node active';
+                    else node.className = 'map-node';
+                }
+            }
+        }
+
+        function initGame() {
+            stopSpeaking();
+            document.getElementById('screen-intro').classList.add('hidden');
+            document.getElementById('screen-game').classList.remove('hidden');
+            document.getElementById('map-banner').classList.remove('hidden');
+
+            initMap();
+            loadScene();
+            if (!isMusicPlaying && volumeSlider.value > 0) toggleMusic();
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function loadScene() {
+            const scene = gameData.scenes[currentSceneIndex];
+            
+            document.getElementById('scene-location').innerText = scene.location;
+            document.getElementById('scene-character').innerText = scene.character;
+            document.getElementById('scene-text').innerHTML = scene.text;
+            
+            const sceneImage = document.getElementById('scene-image');
+            sceneImage.src = scene.image;
+            sceneImage.onerror = function() {
+                this.onerror = null;
+                this.src = `https://placehold.co/150x150/5c4033/f5deb3?text=${encodeURIComponent(scene.character.charAt(0))}`;
+            };
+            
+            const choicesContainer = document.getElementById('choices-container');
+            choicesContainer.innerHTML = '';
+            
+            shuffleArray(scene.choices);
+            
+            scene.choices.forEach((choice, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left bg-[#eaddcf] hover:bg-yellow-600 hover:text-oil-dark text-ink font-body font-bold py-4 px-6 rounded shadow border border-oil-brown transition-colors duration-200 text-lg';
+                btn.innerText = choice.text;
+                btn.onclick = () => handleChoice(index);
+                choicesContainer.appendChild(btn);
+            });
+            updateMap();
+        }
+
+        function handleChoice(choiceIndex) {
+            stopSpeaking();
+            const scene = gameData.scenes[currentSceneIndex];
+            const choice = scene.choices[choiceIndex];
+
+            const feedbackOverlay = document.getElementById('feedback-overlay');
+            const feedbackIcon = document.getElementById('feedback-icon');
+            const feedbackTitle = document.getElementById('feedback-title');
+            const feedbackExplanation = document.getElementById('feedback-explanation');
+            const continueBtn = document.getElementById('feedback-continue-btn');
+
+            feedbackExplanation.innerText = choice.explanation;
+
+            if (choice.correct) {
+                score += 10;
+                feedbackOverlay.className = "absolute inset-0 bg-[#254117]/95 backdrop-blur-sm z-20 flex flex-col justify-center items-center p-8 text-center fade-in text-parchment-light rounded";
+                feedbackIcon.className = "fa-solid fa-trophy text-5xl mb-4 text-oil-gold";
+                feedbackTitle.innerText = "¡Excelente Elección Cívica!";
+                continueBtn.className = "bg-oil-gold hover:bg-yellow-600 hover:text-oil-dark text-oil-dark font-title font-bold py-3 px-8 rounded shadow-lg border border-oil-brown transition-colors duration-200 text-lg";
+            } else {
+                feedbackOverlay.className = "absolute inset-0 bg-oil-red/95 backdrop-blur-sm z-20 flex flex-col justify-center items-center p-8 text-center fade-in text-parchment-light rounded";
+                feedbackIcon.className = "fa-solid fa-circle-exclamation text-5xl mb-4 text-oil-gold";
+                feedbackTitle.innerText = "Revisión Histórica";
+                continueBtn.className = "bg-[#eaddcf] hover:bg-yellow-600 hover:text-oil-dark text-oil-dark font-title font-bold py-3 px-8 rounded shadow-lg border border-oil-brown transition-colors duration-200 text-lg";
+            }
+            feedbackOverlay.classList.remove('hidden');
+        }
+
+        function continueAfterFeedback() {
+            stopSpeaking();
+            document.getElementById('feedback-overlay').classList.add('hidden');
+            advanceScene();
+        }
+
+        function advanceScene() {
+            currentSceneIndex++;
+            stopSpeaking();
+            if (currentSceneIndex < gameData.scenes.length) {
+                loadScene();
+            } else {
+                let calificacion = Math.round((score / 90) * 11) + 1; 
+                if (calificacion > 12) calificacion = 12;
+                if (calificacion < 1) calificacion = 1;
+
+                let mensaje = "";
+                let stars = calificacion >= 10 ? 3 : (calificacion >= 6 ? 2 : 1);
+                
+                if (calificacion === 12) mensaje = "¡Has demostrado una sabiduría absoluta! Artigas deposita en ti la esperanza de la República.";
+                else if (calificacion >= 10) mensaje = "¡Sobresaliente! El General está orgulloso de tu destreza cívica y táctica.";
+                else if (calificacion >= 6) mensaje = "Aceptable. Has aportado a la revolución, aunque hay detalles que la historia te invita a repasar.";
+                else mensaje = "Has marchado con coraje, pero la revolución requiere mayor comprensión de sus ideales. ¡Repasa los documentos!";
+
+                showEnding(`Has completado la Campaña de Las Piedras. Así se forja la patria.`, calificacion, stars, mensaje);
+            }
+        }
+
+        function showEnding(text, calificacion = 1, stars = 1, mensaje = "") {
+            document.getElementById('screen-game').classList.add('hidden');
+            document.getElementById('map-banner').classList.add('hidden');
+            document.getElementById('screen-ending').classList.remove('hidden');
+            
+            const title = document.getElementById('ending-title');
+            const scoreContainer = document.getElementById('score-container');
+            const scoreNumber = document.getElementById('final-score-number');
+
+            title.innerText = "¡Victoria en Las Piedras!";
+            scoreNumber.innerText = calificacion;
+            
+            const starsContainer = document.getElementById('stars-container');
+            starsContainer.innerHTML = '';
+            for(let i=0; i<3; i++) {
+                if (i < stars) {
+                    starsContainer.innerHTML += '<i class="fa-solid fa-star"></i>';
+                } else {
+                    starsContainer.innerHTML += '<i class="fa-regular fa-star opacity-50"></i>';
+                }
+            }
+            document.getElementById('score-message').innerText = mensaje;
+            
+            const victoryBg = document.getElementById('victory-bg');
+            
+            if(calificacion >= 7 && calificacion < 12) {
+                victoryBg.classList.remove('hidden');
+                victoryBg.classList.replace('opacity-100', 'opacity-20'); 
+            }
+
+            if(calificacion === 12) {
+                title.innerText = "¡HÉROE DE LA PATRIA!";
+                title.classList.replace('text-oil-dark', 'text-yellow-400');
+                title.classList.add('drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]', 'scale-110', 'transform');
+                
+                scoreContainer.classList.replace('bg-[#eaddcf]', 'bg-black/60');
+                scoreContainer.classList.replace('border-oil-brown', 'border-yellow-400');
+                scoreContainer.classList.add('shadow-[0_0_50px_rgba(250,204,21,0.6)]');
+                scoreContainer.querySelector('h3').classList.replace('text-oil-dark', 'text-yellow-400');
+                document.getElementById('score-message').classList.replace('text-oil-dark', 'text-gray-300');
+                
+                scoreNumber.classList.replace('text-oil-red', 'text-yellow-400');
+                scoreNumber.classList.add('drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)]', 'scale-110', 'transform');
+                
+                document.getElementById('sunburst-fx').classList.remove('hidden');
+                
+                victoryBg.classList.remove('hidden');
+                victoryBg.classList.replace('opacity-10', 'opacity-100');
+                victoryBg.classList.replace('opacity-20', 'opacity-100');
+                
+                document.getElementById('ending-content-wrapper').classList.add('bg-black/70', 'backdrop-blur-sm', 'p-10', 'rounded-xl', 'border-4', 'border-yellow-500', 'shadow-2xl');
+                document.getElementById('ending-text').classList.replace('text-ink', 'text-white');
+                
+                const btnEscape = document.getElementById('btn-escape-room');
+                btnEscape.classList.remove('hidden');
+            }
+            
+            document.getElementById('ending-text').innerText = text;
+        }
+
+        // --- SISTEMA DEL COFRE MISTERIOSO ---
+        const escapeRoomData = [
+            { verse: "«La tempestad se desata en el llano, el pueblo forja su propia...»", options: ["suerte", "mano", "historia"], correct: 1 },
+            { verse: "«Clemencia para los vencidos... La voz ordena sobre los...»", options: ["caídos", "soldados", "enemigos"], correct: 0 },
+            { verse: "«El sol se oculta, la causa ha vencido... Libertad es el nombre de lo...»", options: ["prometido", "soñado", "construido"], correct: 2 }
+        ];
+        
+        let escapeCurrentStep = 0;
+
+        function startEscapeRoom() {
+            stopSpeaking();
+            document.getElementById('screen-ending').classList.add('hidden');
+            document.getElementById('screen-escape-room').classList.remove('hidden');
+            document.getElementById('escape-prep-phase').classList.remove('hidden');
+            document.getElementById('escape-challenge-phase').classList.add('hidden');
+            document.getElementById('escape-result-phase').classList.add('hidden');
+            escapeCurrentStep = 0;
+        }
+
+        function beginEscapeChallenge() {
+            stopSpeaking();
+            document.getElementById('escape-prep-phase').classList.add('hidden');
+            document.getElementById('escape-challenge-phase').classList.remove('hidden');
+            loadEscapeStep();
+        }
+
+        function loadEscapeStep() {
+            const data = escapeRoomData[escapeCurrentStep];
+            document.getElementById('escape-question-title').innerText = `Mecanismo ${escapeCurrentStep + 1} de 3`;
+            document.getElementById('escape-question-text').innerText = data.verse;
+            
+            const choicesContainer = document.getElementById('escape-choices');
+            choicesContainer.innerHTML = '';
+            
+            let mixedOptions = data.options.map((opt, index) => ({ text: opt, originalIndex: index }));
+            shuffleArray(mixedOptions);
+            
+            mixedOptions.forEach((optObj) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full bg-parchment-light hover:bg-yellow-600 hover:text-oil-dark text-ink font-bold py-4 px-6 rounded shadow border border-oil-brown transition-colors text-xl';
+                btn.innerText = optObj.text;
+                btn.onclick = () => handleEscapeChoice(optObj.originalIndex);
+                choicesContainer.appendChild(btn);
+            });
+        }
+
+        function handleEscapeChoice(originalIndex) {
+            stopSpeaking();
+            if (originalIndex === escapeRoomData[escapeCurrentStep].correct) {
+                escapeCurrentStep++;
+                if (escapeCurrentStep >= escapeRoomData.length) escapeSuccess();
+                else loadEscapeStep();
+            } else {
+                escapeDefeat();
+            }
+        }
+
+        function escapeDefeat() {
+            const lockIcon = document.getElementById('escape-lock-status');
+            lockIcon.classList.add('animate-shake', 'text-oil-red');
+            lockIcon.classList.replace('text-oil-gold', 'text-oil-red');
+            
+            setTimeout(() => {
+                document.getElementById('escape-challenge-phase').classList.add('hidden');
+                const resultPhase = document.getElementById('escape-result-phase');
+                resultPhase.classList.remove('hidden');
+
+                resultPhase.innerHTML = `
+                    <div class="text-7xl text-oil-red mb-4"><i class="fa-solid fa-lock"></i></div>
+                    <h3 class="text-4xl font-title font-bold text-oil-red mb-4 border-b-2 border-oil-red pb-4">El mecanismo se ha trabado</h3>
+                    <p class="text-xl text-parchment-light mb-4 leading-relaxed">Has errado la palabra y el cofre se ha sellado nuevamente. Pero no te desanimes...</p>
+                    <p class="text-2xl text-oil-gold font-bold mb-4">¡Tu campaña ya es Legendaria!</p>
+                    <p class="text-lg text-parchment-dark italic">Haber logrado el 12 perfecto demuestra que la patria está orgullosa de tu sabiduría histórica.</p>
+                `;
+            }, 500);
+        }
+
+        function escapeSuccess() {
+            document.getElementById('escape-challenge-phase').classList.add('hidden');
+            const resultPhase = document.getElementById('escape-result-phase');
+            resultPhase.classList.remove('hidden');
+
+            resultPhase.innerHTML = `
+                <div class="text-6xl text-oil-gold mb-6 animate-bounce"><i class="fa-solid fa-gem"></i></div>
+                <h3 class="text-4xl font-title font-bold text-yellow-400 mb-4 uppercase tracking-widest border-b-2 border-yellow-500 pb-4">¡Cofre Desbloqueado!</h3>
+                <p class="text-xl text-parchment-light mb-8">La patria honra tu memoria infalible. Te ha sido concedida la máxima condecoración militar:</p>
+                
+                <div class="flex justify-center mb-6">
+                    <svg width="200" height="250" viewBox="0 0 200 250" xmlns="http://www.w3.org/2000/svg" class="drop-shadow-[0_10px_30px_rgba(250,204,21,0.6)] hover:scale-110 transition-transform duration-500">
+                        <!-- Cinta Tricolor de Artigas -->
+                        <g transform="translate(60, 10)">
+                            <path d="M 0 0 L 80 0 L 80 100 L 40 130 L 0 100 Z" fill="#1e3a8a" />
+                            <path d="M 20 0 L 60 0 L 60 105 L 40 120 L 20 105 Z" fill="#ffffff" />
+                            <path d="M 0 25 L 80 75 L 80 95 L 0 45 Z" fill="#b91c1c" />
+                            <rect x="0" y="0" width="80" height="8" fill="rgba(0,0,0,0.3)" />
+                        </g>
+                        <!-- Enganche -->
+                        <rect x="90" y="125" width="20" height="15" rx="5" fill="#eab308" stroke="#a16207" stroke-width="2"/>
+                        <!-- Medalla de Oro -->
+                        <circle cx="100" cy="180" r="50" fill="#facc15" stroke="#ca8a04" stroke-width="6"/>
+                        <circle cx="100" cy="180" r="42" fill="none" stroke="#eab308" stroke-width="2" stroke-dasharray="4"/>
+                        <!-- Sol SVG -->
+                        <path d="M 100 145 L 105 160 L 120 155 L 112 168 L 130 175 L 115 182 L 125 198 L 105 190 L 100 205 L 95 190 L 75 198 L 85 182 L 70 175 L 88 168 L 80 155 L 95 160 Z" fill="#b45309"/>
+                        <circle cx="100" cy="180" r="18" fill="#fef08a"/>
+                        <text x="100" y="185" font-family="'Playfair Display', serif" font-size="14" font-weight="bold" fill="#78350f" text-anchor="middle">1811</text>
+                    </svg>
+                </div>
+                
+                <p class="text-3xl text-yellow-400 font-bold font-title mt-4">MEDALLA AL VALOR Y SABIDURÍA</p>
+            `;
+        }
+
+        function exitEscapeRoom() {
+            stopSpeaking();
+            document.getElementById('screen-escape-room').classList.add('hidden');
+            document.getElementById('screen-ending').classList.remove('hidden');
+        }
+
+        // --- FUNCIONES UI AUXILIARES Y MODALES ---
+        function showGlossary(word, meaning) {
+            document.getElementById('glossary-title').innerText = word;
+            document.getElementById('glossary-meaning').innerText = meaning;
+            document.getElementById('glossary-modal').classList.remove('hidden');
+        }
+        function closeGlossary(e) { stopSpeaking(); document.getElementById('glossary-modal').classList.add('hidden'); }
+        function showInstructions() { document.getElementById('instructions-modal').classList.remove('hidden'); }
+        function closeInstructions() { stopSpeaking(); document.getElementById('instructions-modal').classList.add('hidden'); }
+        function showLyrics() { document.getElementById('lyrics-modal').classList.remove('hidden'); }
+        function closeLyrics() { stopSpeaking(); document.getElementById('lyrics-modal').classList.add('hidden'); }
+        function showCredits() { document.getElementById('credits-modal').classList.remove('hidden'); }
+        function closeCredits() { stopSpeaking(); document.getElementById('credits-modal').classList.add('hidden'); }
+
+        function openChat() {
+            const scene = gameData.scenes[currentSceneIndex];
+            document.getElementById('chat-character-name').innerText = scene.character;
+            document.getElementById('chat-header-avatar').src = scene.image;
+            
+            const chatHistory = document.getElementById('chat-history');
+            const greetingId = 'chat-greet-' + Date.now();
+            chatHistory.innerHTML = `
+                <div class="bg-white/70 p-3 rounded-lg border border-oil-brown/30 shadow-sm self-start max-w-[80%] flex flex-col gap-2">
+                    <div class="flex items-start gap-3">
+                        <img src="${scene.image}" class="w-8 h-8 rounded-full border border-oil-brown object-cover" onerror="this.src='https://placehold.co/150/5c4033/f5deb3?text=R'" alt="Avatar">
+                        <p class="mt-1" id="${greetingId}">Saludos. Selecciona una de las preguntas debajo para conversar conmigo.</p>
+                    </div>
+                    <div class="flex justify-end gap-2 border-t border-oil-brown/20 pt-2 mt-1">
+                        <button onclick="speakText(document.getElementById('${greetingId}').innerText, '${scene.character}')" class="text-oil-brown hover:text-yellow-600 text-sm font-bold transition-colors" title="Escuchar saludo">
+                            <i class="fa-solid fa-ear-listen"></i> Escuchar
+                        </button>
+                        <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-600 text-sm transition-colors" title="Detener audio">
+                            <i class="fa-solid fa-circle-stop"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            const optionsContainer = document.getElementById('chat-options-container');
+            optionsContainer.innerHTML = '';
+            
+            scene.questions.forEach((qObj) => {
+                const row = document.createElement('div');
+                row.className = 'flex gap-2 w-full items-stretch';
+
+                const btnSpeak = document.createElement('button');
+                btnSpeak.className = 'flex-shrink-0 bg-oil-brown/20 hover:bg-yellow-600 hover:text-oil-dark text-oil-dark px-3 rounded border border-oil-brown/50 transition-colors flex items-center justify-center';
+                btnSpeak.innerHTML = '<i class="fa-solid fa-ear-listen"></i>';
+                btnSpeak.onclick = () => speakText(qObj.q);
+                btnSpeak.title = "Escuchar esta pregunta";
+
+                const btnAsk = document.createElement('button');
+                btnAsk.className = 'flex-grow text-left bg-parchment-light hover:bg-yellow-600 hover:text-oil-dark text-oil-dark font-body py-2 px-4 rounded border border-oil-brown/50 transition-colors text-sm';
+                btnAsk.innerText = qObj.q;
+                btnAsk.onclick = () => handleChatQuestion(qObj.q, qObj.a, scene.image);
+                
+                row.appendChild(btnSpeak);
+                row.appendChild(btnAsk);
+                optionsContainer.appendChild(row);
+            });
+
+            document.getElementById('ai-chat-modal').classList.remove('hidden');
+        }
+
+        function closeChat() { stopSpeaking(); document.getElementById('ai-chat-modal').classList.add('hidden'); }
+
+        function handleChatQuestion(question, answer, avatarSrc) {
+            stopSpeaking();
+            const chatHistory = document.getElementById('chat-history');
+            chatHistory.innerHTML += `
+                <div class="bg-oil-brown text-parchment-light p-3 rounded-lg border border-oil-dark shadow-sm self-end max-w-[80%] ml-auto mt-4">
+                    <p>${question}</p>
+                </div>
+            `;
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+
+            const msgId = 'chat-ans-' + Date.now();
+            const sceneCharacter = gameData.scenes[currentSceneIndex].character;
+
+            setTimeout(() => {
+                chatHistory.innerHTML += `
+                    <div class="bg-white/70 p-3 rounded-lg border border-oil-brown/30 shadow-sm self-start max-w-[80%] flex flex-col gap-2 mt-4 slide-up">
+                        <div class="flex items-start gap-3">
+                            <img src="${avatarSrc}" class="w-8 h-8 rounded-full object-cover border border-oil-brown" onerror="this.src='https://placehold.co/150/5c4033/f5deb3?text=R'" alt="Avatar">
+                            <p class="mt-1" id="${msgId}">${answer}</p>
+                        </div>
+                        <div class="flex justify-end gap-2 border-t border-oil-brown/20 pt-2 mt-1">
+                            <button onclick="speakText(document.getElementById('${msgId}').innerText, '${sceneCharacter}')" class="text-oil-brown hover:text-yellow-600 text-sm font-bold transition-colors" title="Escuchar respuesta">
+                                <i class="fa-solid fa-ear-listen"></i> Escuchar
+                            </button>
+                            <button onclick="stopSpeaking()" class="text-oil-red hover:text-red-600 text-sm transition-colors" title="Detener audio">
+                                <i class="fa-solid fa-circle-stop"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }, 600);
+        }
+    </script>
+</body>
+</html>
